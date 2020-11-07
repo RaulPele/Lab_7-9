@@ -31,4 +31,19 @@ class Student:
     def setLastName(self, lastName):
         self.__lastName = lastName
 
+    def __eq__(self, other):
+        if self.__IDStudent == other.__IDStudent:
+            return True
+        return False
+
+    def addDiscipline(self, discipline):
+        """
+        Adauga o noua disciplina pentru studentul self
+        :param discipline: obiect Discipline
+        """
+        for i in range(0, len(self.__disciplines)):
+            currentDiscipline = self.__disciplines[i]
+            if discipline.getName() >currentDiscipline.getName():
+                self.__disciplines.insert(i+1, discipline)
+                break
 
