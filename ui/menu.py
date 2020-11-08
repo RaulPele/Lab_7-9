@@ -17,11 +17,12 @@ class Menu:
         self.__menuItems = menuItems
         self.__menuFunctions = menuFunctions
         self.__subMenus = subMenus
+        self.__index = 0
 
     def getMenuItems(self):
         return self.__menuItems
 
-    def get_menuFunctions(self):
+    def getMenuFunctions(self):
         return self.__menuFunctions
 
     @staticmethod
@@ -32,14 +33,14 @@ class Menu:
     def set_commands(commands):
         Menu.__commands = commands
 
-    def get_subMenus(self):
+    def getSubMenus(self):
         return self.__subMenus
 
     def get_subMenuAt(self, key):
-        return (self.get_subMenus())[key]
+        return (self.getSubMenus())[key]
 
-    def get_functionAt(self, functions, index):
-        return functions[index]
+    def getFunction(self, index):
+        return self.__menuFunctions[index]
 
     def printMenu(self):
         items = self.getMenuItems().values()
@@ -49,7 +50,7 @@ class Menu:
         print()
 
     @staticmethod
-    def user_exits(op):
+    def userExits(op):
         """
         Returneaza True daca optiunea aleasa de utilizator op indica iesirea din meniul curent.
         :param op: str - optiunea aleasa de utilizator
@@ -62,7 +63,7 @@ class Menu:
         return False
 
     @staticmethod
-    def navigate_backwards():
+    def navigateBackwards():
         if len(Menu.__menuStack) > 0:
             Menu.__menuStack.pop()
 
@@ -72,7 +73,7 @@ class Menu:
         return currentMenu
 
     @staticmethod
-    def navigate_to_submenu(op):
+    def navigateToSubmenu(op):
         currentMenu = Menu.getCurrentMenu()
         Menu.__menuStack.append(currentMenu.get_subMenuAt(op))
 
@@ -86,12 +87,12 @@ class Menu:
         return len(Menu.__menuStack)
 
     @staticmethod
-    def initialize_stack(mainMenu):
+    def initializeStack(mainMenu):
         if len(Menu.__menuStack) == 0:
             Menu.__menuStack.append(mainMenu)
 
     @staticmethod
-    def get_commandAt(key):
+    def getCommand(key):
         return Menu.__commands[key]
 
     def addItem(self, item):
@@ -99,12 +100,12 @@ class Menu:
         self.__menuItems[key] = item
 
     def addFunction(self, function):
-        key = str(len(self.__menuItems)+1)
-        self.__menuFunctions[key] = function
+        self.__index += 1
+        self.__menuFunctions[str(self.__index)] = function
 
     def addSubMenu(self, subMenu):
-        key = str(len(self.__subMenus) + 1)
-        self.__subMenus[key] = subMenu
+        self.__index += 1
+        self.__subMenus[str(self.__index)] = subMenu
         
     def isOption(self, op):
         """

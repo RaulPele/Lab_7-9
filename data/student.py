@@ -12,6 +12,12 @@ class Student:
     def getName(self):
         return self.__firstName + " " + self.__lastName
 
+    def getFirstName(self):
+        return self.__firstName
+
+    def getLastName(self):
+        return self.__lastName
+
     def getAverage(self):
         return self.__genAverage
 
