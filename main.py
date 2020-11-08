@@ -1,2 +1,5 @@
+from ui.console import Console
+
 if __name__ == "__main__":
-    pass
+    console = Console()
+    console.run()
