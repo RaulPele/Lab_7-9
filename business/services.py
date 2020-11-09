@@ -1,5 +1,4 @@
-from data.student import Student
-from data.discipline import  Discipline
+from domain.student import Student
 from validation.errors import InvalidStudentError, StudentAlreadyExistsError
 
 class StudentSrv:

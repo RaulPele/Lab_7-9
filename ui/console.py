@@ -1,5 +1,6 @@
 from ui.menu import Menu
 from validation.errors import InvalidStudentError, StudentAlreadyExistsError
+from utils.colors import  Colors
 
 class Console:
     def __init__(self, studentSrv):
@@ -68,12 +69,12 @@ class Console:
 
     def printStudents(self):
         students = self.__studentSrv.getStudents()
-        print("Studentii din cadrul facultatii: \n")
+        print(Colors.RED + "Studentii din cadrul facultatii: \n")
         for student in students:
-            print("ID: " + student.getID())
-            print("Nume: " + student.getLastName())
-            print("Prenume: " + student.getFirstName())
-            print()
+            print(Colors.RED + "ID: " + Colors.GREEN + student.getID())
+            print(Colors.RED + "Nume: " + Colors.GREEN+ student.getLastName())
+            print(Colors.RED + "Prenume: " + Colors.GREEN + student.getFirstName())
+            print(Colors.RESET)
 
 
     def run(self):

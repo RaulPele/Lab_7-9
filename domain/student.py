@@ -5,6 +5,7 @@ class Student:
         self.__lastName = lastName
         self.__genAverage = 0
         self.__disciplines = []
+        self.formatName()
 
     def getID(self):
         return self.__IDStudent
@@ -53,3 +54,8 @@ class Student:
                 self.__disciplines.insert(i+1, discipline)
                 break
 
+    def formatName(self):
+        if(self.__firstName.isalpha()):
+            self.__firstName = self.__firstName.capitalize()
+        if self.__lastName.isalpha():
+            self.__lastName =self.__lastName.capitalize()
