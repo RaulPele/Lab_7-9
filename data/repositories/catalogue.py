@@ -45,6 +45,10 @@ class Catalogue():
         self.__enrollStudent(newStudent)
 
     def addDisciplineToStudents(self, newDiscipline):
+        """
+        Adauga disciplina obligatorie newDiscipline in lista de discipline a studentilor din catalog
+        :param newDiscipline: disciplina Discipline()
+        """
         for student in self.__students:
             student.addDiscipline(newDiscipline)
 
@@ -79,6 +83,11 @@ class Catalogue():
         return
 
     def removeStudentByID(self, ID):
+        """
+        Sterge studentul identificat cu ID din lista
+        raise NonExistentIDError - daca nu exista student cu id-ul ID in lista
+        :param ID: string - id-ul studentului
+        """
         for i in range(0, len(self.__students)):
             student = self.__students[i]
             if student.getID() == ID:
@@ -87,10 +96,19 @@ class Catalogue():
         raise NonExistentIDError("ID-ul dat nu se afla in lista studentilor!\n")
 
     def removeDisciplineForStudents(self, discipline):
+        """
+        Sterge disciplina discipline din lista de discipline a studentilor
+        :param discipline: obiect de tip Discipline()
+        """
         for student in self.getStudents():
             student.removeDiscipline(discipline)
 
     def removeDisciplineByID(self, ID):
+        """
+        Sterge disciplina identificata cu ID din lista de discipline a catalogului
+        :param ID: id-ul disciplinei - string
+        raise NonExistentIDError - in cazul in care disciplina cu id-ul ID nu se afla in lista
+        """
         for i in range(0, len(self.__disciplines)):
             discipline = self.__disciplines[i]
             if discipline.getID() == ID:
@@ -100,6 +118,11 @@ class Catalogue():
         raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
 
     def findStudentByID(self, ID):
+        """
+        Returneaza studentul cu id-ul ID din lista
+        raise NonExistentIDError - daca studentul nu exista in lista
+        :param ID: id-ul studentului - string
+        """
         for student in self.__students:
             if student.getID() == ID:
                 return student
@@ -107,7 +130,28 @@ class Catalogue():
 
 
     def getStudents(self):
-        return self.__students
+        return self.copyStudents()
 
     def getDisciplines(self):
-        return self.__disciplines
+        return self.copyDisciplines()
+
+    def getOptionals(self):
+        optionals = []
+        for discipline in self.getDisciplines():
+            if discipline.getIsOptional():
+                optionals.append(discipline)
+        return optionals
+
+    def copyDisciplines(self):
+        """Returneaza o copie a listei de discipline"""
+        copy = []
+        for discipline in self.__disciplines:
+            copy.append(discipline.makeCopy())
+        return copy
+
+    def copyStudents(self):
+        "Returneaza o copie a listei de studenti"
+        copy = []
+        for student in self.__students:
+            copy.append(student.makeCopy())
+        return copy

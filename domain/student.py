@@ -55,7 +55,7 @@ class Student:
                 Colors.RED + "Medie generala: " + Colors.GREEN + str(self.getAverage()) + "\n\n"
         for discipline in self.getDisciplines():
             output += str(discipline)
-            output+= Colors.RED +"Note: " + Colors.GREEN + str(self.getGrade(discipline)) + "\n"
+            output+= Colors.RED +"Note: " + Colors.GREEN + str(self.getGrade(discipline)) + "\n\n"
         output+=Colors.RESET
         return output
 
@@ -82,6 +82,11 @@ class Student:
         self.addGrade(discipline, 0)
 
     def removeDiscipline(self, discipline):
+        """
+        Sterge disciplina discipline din lista studentului de discipline
+        si sterge notele aferente disciplinei
+        :param discipline: obiect Discipline()
+        """
         if discipline in self.__disciplines:
             for i in range(0, len(self.__disciplines)):
                 if self.__disciplines[i] == discipline:
@@ -90,12 +95,25 @@ class Student:
                     return
 
     def addGrade(self, discipline, grade):
+        """
+        Adauga o nota la disciplina discipline
+        :param discipline: disciplina Discipline()
+        :param grade: nota - int
+        """
         if discipline.getID() not in self.__grades.keys():
             self.__grades[discipline.getID()] = []
         else:
             self.__grades[discipline.getID()].append(grade)
 
+    def makeCopy(self):
+        copy = Student(self.getID(), self.getFirstName(), self.getLastName())
+        return copy
+
     def formatName(self):
+        """
+        Formateaza campurile studentului
+        Capitalizeaza numele si prenumele studentului
+        """
         formatedFirstName=""
 
         for name in self.__firstName.split("-"):

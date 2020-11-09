@@ -30,10 +30,21 @@ class StudentValidator:
             raise InvalidStudentError(errors)
 
     def validateID(self, id):
+        """
+        Valideaza id-ul id
+        :param id: string - id
+        raise InvalidIDError- daca id-ul este invalid
+        """
         if not id.isnumeric():
             raise InvalidIDError("ID-ul studentului este invalid! \n")
 
     def validateName(self, firstName, lastName):
+        """
+        Valideaza numele unui student
+        :param firstName: prenume - string
+        :param lastName: nume - string
+        raise InvalidNameError - daca numele nu este valid
+        """
         errors=""
         for name in firstName.split("-"):
             if not name.isalpha():
@@ -53,6 +64,11 @@ class StudentValidator:
 class DisciplineValidator:
 
     def validateDiscipline(self, discipline):
+        """
+        Validaeza o disciplina
+        :param discipline: obiect Discipline()
+        raise InvalidDisciplineError - daca unul din campurile obiectului discipline nu este valid
+        """
         id = discipline.getID()
         name = discipline.getName()
         teacherFirst = discipline.getTeacherFirst()
@@ -84,10 +100,21 @@ class DisciplineValidator:
             raise InvalidDisciplineError(errors)
 
     def validateID(self, id):
+        """
+        Validaeza id-ul unei discipline
+        :param id: id- string
+        raise InvalidIDError - daca id-ul nu este valid
+        """
         if not id.isnumeric():
             raise InvalidIDError("ID-ul disciplinei este invalid! \n")
 
     def validateTeacher(self, firstName, lastName):
+        """
+        Valideaza numele unui profesor corespunzator unei discipline
+        :param firstName: prenume - string
+        :param lastName: nume - string
+        raise InvalidNameError - daca numele nu este valid
+        """
         errors = ""
 
         for name in firstName.split("-"):
@@ -102,10 +129,20 @@ class DisciplineValidator:
             raise InvalidNameError(errors)
 
     def validateDisciplineName(self, name):
+        """
+        Valideaza numele unei discipline
+        :param name: nume - string
+        raise InvalidNameError - daca numele nu este valid
+        """
         for n in name.split(" "):
             if not n.isalpha():
                 raise InvalidNameError("Numele disciplinei este invalid!\n")
 
     def validateOptional(self, isOptional):
+        """
+        Validaeza campul isOptional al unei discipline
+        :param isOptional: boolean
+        raise InvalidOptional - daca valoarea variabilei nu este de tip boolean
+        """
         if isOptional not in [True, False]:
             raise InvalidOptional("Nu a fost specificat caracterul disciplinei (optional sau obligatoriu)!\n")

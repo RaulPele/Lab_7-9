@@ -61,11 +61,20 @@ class Console:
         currentMenu.printMenu()
 
     def __readOption(self):
+        """
+        Citeste o optiune de la utilizator
+        :return op: optiunea citita - string
+        """
         op = input("Alege o optiune: \n")
         return op
 
 
     def getNextOption(self, op):
+        """
+        Executa urmatoarea actiune in functie de alegerea op a utilizatorului
+        navigand prin meniu sau apeland functia corespunzatoare
+        :param op: optiunea utilizatorului - string
+        """
         if Menu.userExits(op):
             Menu.navigateBackwards()
             return
@@ -77,6 +86,36 @@ class Console:
 
         function = currentMenu.getFunction(op)
         function()
+
+    def selectOptionals(self, student):
+        """
+        Preia de la utilizator datele corespunzatoare optionalelor si le adauga in lista de discipline
+        pentru studentul student
+        :param student: student tip Student()
+        """
+        disciplines = self.__disciplineSrv.getOptionals()
+        if len(disciplines) == 0:
+            return
+        for discipline in disciplines:
+            print(discipline)
+
+        answer = input("Doriti sa alegeti discipline optionale? (Da, Nu)\n").lower()
+        while answer not in ["da", "nu"]:
+            answer = input("Doriti sa alegeti discipline optionale? (Da, Nu)\n").lower()
+
+        if answer == "nu":
+            return
+
+        while len(disciplines) !=0:
+            option = input("Dati id-ul disciplinei optionale dorite sau tastati exit: \n").lower()
+            if option =="exit":
+                break
+            for i in range(0, len(disciplines)):
+                if disciplines[i].getID() == option:
+                    student.addDiscipline(disciplines[i])
+                    del disciplines[i]
+                    for discipline in disciplines:
+                        print(discipline)
 
     def addStudent(self):
         """
@@ -95,10 +134,14 @@ class Console:
         except StudentAlreadyExistsError as err:
             print(str(err))
         else:
+            self.selectOptionals(self.__studentSrv.findStudent(IDStudent))
             self.printStudents()
         input("Apasati Enter pentru a continua...\n")
 
     def addDiscipline(self):
+        """
+        Ia datele de la utilizator pentru adaugarea disciplinei si le transmite la serviciul corespunzator
+        """
         name = input("Dati numele disciplinei: \n").strip()
         teacherFirst = input("Dati prenumele profesorului disciplinei: \n").strip()
         teacherLast = input("Dati numele profesorului disciplinei: \n").strip()
@@ -133,6 +176,7 @@ class Console:
             print(Colors.RESET)
 
     def printDisciplines(self, message = "Disciplinele din cadrul facultatii: \n"):
+        "Afiseaza lista de discipline din cadrul facultatii"
         disciplines = self.__disciplineSrv.getDisciplines()
 
         if len(disciplines) == 0:
@@ -144,6 +188,9 @@ class Console:
             print(discipline)
 
     def removeStudent(self):
+        """
+        Ia datele de la utilizator pentru stergerea studentului si apeleaza serviciul corespunzator
+        """
         if len(self.__studentSrv.getStudents()) == 0:
             print(Colors.GREEN + "Lista este goala.\n" + Colors.RESET)
             return
@@ -161,6 +208,7 @@ class Console:
             input("Apasati Enter pentru a continua...")
 
     def removeDiscipline(self):
+        "Ia datele de la utilizator pentru stergerea unei discipline si apeleaza serviciul corespunzator"
         if len(self.__disciplineSrv.getDisciplines()) == 0:
             print(Colors.GREEN + "Lista este goala.\n" + Colors.RESET)
             return
@@ -178,6 +226,8 @@ class Console:
             input("Apasa Enter pentru a continua...")
 
     def findStudent(self):
+        """Ia datele de la utilizator pentru afisarea datelor despre un student
+        si apeleaza serviciul corespunzator"""
         if len(self.__studentSrv.getStudents()) == 0:
             print(Colors.GREEN + "Lista este goala.\n" + Colors.RESET)
             return
@@ -194,7 +244,7 @@ class Console:
             print(student)
 
     def run(self):
-
+        """Functia principala care executa programul"""
         while True:
             if Menu.getStackSize() == 0:
                 return

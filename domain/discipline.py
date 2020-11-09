@@ -43,6 +43,7 @@ class Discipline:
         self.__isOptional = isOptional
 
     def __eq__(self, other):
+        "Defineste operatia de egalitate dintre doua obiecte de tip discipline"
         if self.__IDDiscipline == other.__IDDiscipline:
             return True
         if self.__name == other.__name and self.getTeacher() == other.getTeacher():
@@ -50,6 +51,7 @@ class Discipline:
         return False
 
     def __str__(self):
+        "Defineste modul in care se afiseaza obiectul sub forma de string"
         output = Colors.RED + "ID: "+ Colors.GREEN + self.getID() +"\n"+\
                  Colors.RED + "Nume: " + Colors.GREEN + self.getName() + "\n"+\
                  Colors.RED + "Profesor: " + Colors.GREEN + self.getTeacher() +"\n"
@@ -62,6 +64,7 @@ class Discipline:
 
 
     def formatFields(self):
+        "Formateaza campurile disciplinei capitalizand numele si transformand isOptional in boolean"
         formatedName=""
         for n in self.__name.split(" "):
             n = n.capitalize()
@@ -80,7 +83,12 @@ class Discipline:
 
         self.__teacherLast = self.__teacherLast.capitalize()
 
-        if self.__isOptional.lower() == "da":
-            self.__isOptional = True
-        elif self.__isOptional.lower() =="nu":
-            self.__isOptional = False
+        if isinstance(self.__isOptional, str):
+            if self.__isOptional.lower() == "da":
+                self.__isOptional = True
+            elif self.__isOptional.lower() =="nu":
+                self.__isOptional = False
+
+    def makeCopy(self):
+        copy = Discipline(self.getID(), self.getName(), self.getTeacherFirst(), self.getTeacherFirst(), self.getIsOptional())
+        return copy
