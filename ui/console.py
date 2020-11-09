@@ -13,22 +13,27 @@ class Console:
         """
         Functia creaza meniul pentru utilizator
         """
-        addStudentMenu = Menu()
-        addStudentMenu.addItem("1. Adauga un student in facultate")
-        addStudentMenu.addFunction(self.addStudent)
-        addStudentMenu.addItem("2. Inapoi...")
+        addMenu = Menu()
+        addMenu.addItem("1. Adauga un student in facultate")
+        addMenu.addFunction(self.addStudent)
+        addMenu.addItem("2. Adauga o disciplina la facultate")
+        addMenu.addFunction(self.addDiscipline)
+        addMenu.addItem("3. Inapoi...")
 
-        addDisciplineMenu = Menu()
-        addDisciplineMenu.addItem("1. Adauga o disciplina la facultate")
-        addDisciplineMenu.addFunction(self.addDiscipline)
-        addDisciplineMenu.addItem("2. Inapoi...")
+
+        printMenu = Menu()
+        printMenu.addItem("1. Tipareste lista studentilor din facultate")
+        printMenu.addFunction(self.printStudents)
+        printMenu.addItem("2. Tipareste lista disciplinelor din facultate")
+        printMenu.addFunction(self.printDisciplines)
+        printMenu.addItem("3. Inapoi...")
 
         mainMenu = Menu()
-        mainMenu.addItem("1. Adauga student")
-        mainMenu.addItem("2. Adauga disciplina")
+        mainMenu.addItem("1. Adaugare")
+        mainMenu.addItem("2. Afisare")
         mainMenu.addItem("3. Iesire")
-        mainMenu.addSubMenu(addStudentMenu)
-        mainMenu.addSubMenu(addDisciplineMenu)
+        mainMenu.addSubMenu(addMenu)
+        mainMenu.addSubMenu(printMenu)
         Menu.initializeStack(mainMenu)
 
     def __displayMenu(self):
@@ -98,6 +103,11 @@ class Console:
         Afiseaza studentii din cadrul facultatii
         """
         students = self.__studentSrv.getStudents()
+
+        if len(students) == 0:
+            print(Colors.GREEN+ "Lista studentilor este goala.\n" +Colors.RESET)
+            return
+
         print(Colors.RED + "Studentii din cadrul facultatii: \n")
         for student in students:
             print(Colors.RED + "ID: " + Colors.GREEN + student.getID())
@@ -107,6 +117,11 @@ class Console:
 
     def printDisciplines(self):
         disciplines = self.__disciplineSrv.getDisciplines()
+
+        if len(disciplines) == 0:
+            print(Colors.GREEN + "Lista disciplinelor este goala.\n" + Colors.RESET)
+            return
+
         print (Colors.RED + "Disciplinele din cadrul facultatii: \n")
         for discipline in disciplines:
             print(discipline)
