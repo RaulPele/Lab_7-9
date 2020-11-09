@@ -48,6 +48,10 @@ class Student:
         Adauga o noua disciplina pentru studentul self
         :param discipline: obiect Discipline
         """
+        if len(self.__disciplines) ==0:
+            self.__disciplines.append(discipline)
+            return
+
         for i in range(0, len(self.__disciplines)):
             currentDiscipline = self.__disciplines[i]
             if discipline.getName() >currentDiscipline.getName():
@@ -55,7 +59,12 @@ class Student:
                 break
 
     def formatName(self):
-        if(self.__firstName.isalpha()):
-            self.__firstName = self.__firstName.capitalize()
-        if self.__lastName.isalpha():
-            self.__lastName =self.__lastName.capitalize()
+        formatedFirstName=""
+
+        for name in self.__firstName.split("-"):
+            formatedFirstName += name.capitalize()
+            formatedFirstName +="-"
+
+        formatedFirstName = formatedFirstName[0:len(formatedFirstName)-1]
+        self.__firstName = formatedFirstName
+        self.__lastName = self.__lastName.capitalize()

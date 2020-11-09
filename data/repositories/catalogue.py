@@ -1,5 +1,5 @@
 
-from validation.errors import  StudentAlreadyExistsError
+from validation.errors import  StudentAlreadyExistsError, DisciplineAlreadyExistsError
 
 class Catalogue():
     def __init__(self):
@@ -12,7 +12,7 @@ class Catalogue():
         :param newStudent: obiect Student
         """
         for discipline in self.__disciplines:
-            if not discipline.isOptional:
+            if  discipline.getIsOptional() == False:
                 newStudent.addDiscipline(discipline)
 
     def addStudent(self, newStudent):
@@ -22,7 +22,8 @@ class Catalogue():
         raise StudentAlreadyExistsError daca student se afla deja in lista
         :param newStudent: obiect Student
         """
-        if len(self.__students) == 0:
+        oldSize = len(self.__students)
+        if oldSize == 0:
             self.__students.append(newStudent)
             self.__enrollStudent(newStudent)
             return
@@ -30,7 +31,6 @@ class Catalogue():
         if newStudent in self.__students:
             raise StudentAlreadyExistsError("Studentul se afla deja in lista!\n")
 
-        oldSize = len(self.__students)
         for i in range(0, oldSize):
             currentStudent = self.__students[i]
             if newStudent.getLastName() < currentStudent.getLastName() or\
@@ -44,5 +44,42 @@ class Catalogue():
 
         self.__enrollStudent(newStudent)
 
+    def addDisciplineToStudents(self, newDiscipline):
+        for student in self.__students:
+            student.addDiscipline(newDiscipline)
+
+    def addDiscipline(self, newDiscipline):
+        """
+        Adauga disciplina newDiscipline pe pozitia corespunzatoare pentru a respecta
+        ordonarea alfabetica a listei de discipline
+        raise DisciplineAlreadyExists - daca disciplina exista deja in lista
+        :param newDiscipline: obiect Discipline()
+        """
+        oldSize = len(self.__disciplines)
+        if oldSize == 0:
+            self.__disciplines.append(newDiscipline)
+            if newDiscipline.getIsOptional() == False:
+                self.addDisciplineToStudents(newDiscipline)
+            return
+
+        if newDiscipline in self.__disciplines:
+            raise DisciplineAlreadyExistsError("Disciplina exista deja in facultate!\n")
+
+        for i in range(0, oldSize):
+            currentDiscipline = self.__disciplines[i]
+            if currentDiscipline.getName() > newDiscipline.getName():
+                self.__disciplines.insert(i, newDiscipline)
+                break
+
+        if oldSize == len(self.__disciplines):
+            self.__disciplines.append(newDiscipline)
+
+        if newDiscipline.getIsOptional() == False:
+            self.addDisciplineToStudents(newDiscipline)
+        return
+
     def getStudents(self):
         return self.__students
+
+    def getDisciplines(self):
+        return self.__disciplines
