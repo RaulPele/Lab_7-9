@@ -43,8 +43,20 @@ class StudentSrv:
 
         try:
             self.__catalogue.removeStudentByID(identifier)
-        except NonExistentID as err:
-            raise NonExistentID(str(err))
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+
+    def findStudent(self, identifier):
+        try:
+            self.__validator.validateID(identifier)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
+
+        try:
+            student = self.__catalogue.findStudentByID(identifier)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+        return student
 
 
 class DisciplineService:
@@ -83,6 +95,7 @@ class DisciplineService:
             self.__catalogue.removeDisciplineByID(identifier)
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
+
 
     def getDisciplines(self):
         return self.__catalogue.getDisciplines()

@@ -35,15 +35,22 @@ class Console:
         removeMenu.addFunction(self.removeDiscipline)
         removeMenu.addItem("3. Inapoi...")
 
+        searchMenu = Menu()
+        searchMenu.addItem("1. Afiseaza informatii despre un student din lista ")
+        searchMenu.addFunction(self.findStudent)
+        searchMenu.addItem("2. Inapoi...")
+
 
         mainMenu = Menu()
         mainMenu.addItem("1. Adaugare")
         mainMenu.addItem("2. Afisare")
         mainMenu.addItem("3. Stergere")
-        mainMenu.addItem("4. Iesire")
+        mainMenu.addItem("4. Cautare")
+        mainMenu.addItem("5. Iesire")
         mainMenu.addSubMenu(addMenu)
         mainMenu.addSubMenu(printMenu)
         mainMenu.addSubMenu(removeMenu)
+        mainMenu.addSubMenu(searchMenu)
         Menu.initializeStack(mainMenu)
 
     def __displayMenu(self):
@@ -170,6 +177,21 @@ class Console:
             self.printDisciplines("Lista de discipline obtinuta in urma eliminarii: \n")
             input("Apasa Enter pentru a continua...")
 
+    def findStudent(self):
+        if len(self.__studentSrv.getStudents()) == 0:
+            print(Colors.GREEN + "Lista este goala.\n" + Colors.RESET)
+            return
+        self.printStudents()
+
+        identifier = input("Dati ID-ul studentului pentru care se va face afisarea: \n")
+        try:
+            student = self.__studentSrv.findStudent(identifier)
+        except InvalidIDError as err:
+            print(str(err))
+        except NonExistentIDError as err:
+            print(str(err))
+        else:
+            print(student)
 
     def run(self):
 

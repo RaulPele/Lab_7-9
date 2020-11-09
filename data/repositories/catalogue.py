@@ -86,13 +86,25 @@ class Catalogue():
                 return
         raise NonExistentIDError("ID-ul dat nu se afla in lista studentilor!\n")
 
+    def removeDisciplineForStudents(self, discipline):
+        for student in self.getStudents():
+            student.removeDiscipline(discipline)
+
     def removeDisciplineByID(self, ID):
         for i in range(0, len(self.__disciplines)):
             discipline = self.__disciplines[i]
             if discipline.getID() == ID:
+                self.removeDisciplineForStudents(discipline)
                 del self.__disciplines[i]
                 return
-        raise NonExistentIDError("ID-ul dat nu se afla in lista disciplinelor!\n")
+        raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
+
+    def findStudentByID(self, ID):
+        for student in self.__students:
+            if student.getID() == ID:
+                return student
+        raise NonExistentIDError("Studentul cu ID-ul dat nu se afla in lista studentilor!\n")
+
 
     def getStudents(self):
         return self.__students
