@@ -1,4 +1,5 @@
-from validation.errors import  InvalidStudentError, InvalidDisciplineError
+from validation.errors import  InvalidStudentError, InvalidDisciplineError, InvalidIDError
+from validation.errors import InvalidNameError, InvalidOptional
 
 class StudentValidator:
 
@@ -15,9 +16,25 @@ class StudentValidator:
         firstName = student.getFirstName()
         lastName = student.getLastName()
         errors =""
-        if not id.isnumeric():
-            errors += "ID-ul studentului este invalid! \n"
+        try:
+            self.validateID(id)
+        except InvalidIDError as err:
+            errors+= str(err)
 
+        try:
+            self.validateName(firstName, lastName)
+        except InvalidNameError as err:
+            errors += str(err)
+
+        if len(errors) != 0:
+            raise InvalidStudentError(errors)
+
+    def validateID(self, id):
+        if not id.isnumeric():
+            raise InvalidIDError("ID-ul studentului este invalid! \n")
+
+    def validateName(self, firstName, lastName):
+        errors=""
         for name in firstName.split("-"):
             if not name.isalpha():
 
@@ -28,7 +45,10 @@ class StudentValidator:
             errors += "Numele studentului este invalid!\n"
 
         if len(errors) != 0:
-            raise InvalidStudentError(errors)
+            raise InvalidNameError(errors)
+
+
+
 
 class DisciplineValidator:
 
@@ -40,24 +60,52 @@ class DisciplineValidator:
         isOptional = discipline.getIsOptional()
 
         errors = ""
-        if not id.isnumeric():
-            errors += "ID-ul disciplinei este invalid!\n"
+        try:
+            self.validateID(id)
+        except InvalidIDError as err:
+            errors += str(err)
 
-        for n in name.split(" "):
-            if not n.isalpha():
-                errors += "Numele disciplinei este invalid!\n"
-                break
+        try:
+            self.validateDisciplineName(name)
+        except InvalidNameError as err:
+            errors += str(err)
 
-        if not teacherLast.isalpha():
-            errors += "Numele profesorului disciplinei este invalid!\n"
+        try:
+            self.validateTeacher(teacherFirst, teacherLast)
+        except InvalidNameError as err:
+            errors +=str(err)
 
-        for firstName in teacherFirst.split("-"):
-            if not firstName.isalpha():
-                errors += "Prenumele profesorului este invalid!\n"
-                break
-
-        if isOptional not in [True, False]:
-            errors += "Nu a fost specificat caracterul disciplinei (optional sau obligatoriu)!\n"
+        try:
+            self.validateOptional(isOptional)
+        except InvalidOptional as err:
+            errors +=str(err)
 
         if len(errors)!=0:
             raise InvalidDisciplineError(errors)
+
+    def validateID(self, id):
+        if not id.isnumeric():
+            raise InvalidIDError("ID-ul disciplinei este invalid! \n")
+
+    def validateTeacher(self, firstName, lastName):
+        errors = ""
+
+        for name in firstName.split("-"):
+            if not name.isalpha():
+                errors += "Prenumele profesorului este invalid!\n"
+                break
+
+        if not lastName.isalpha():
+            errors += "Numele profesorului este invalid!\n"
+
+        if len(errors) != 0:
+            raise InvalidNameError(errors)
+
+    def validateDisciplineName(self, name):
+        for n in name.split(" "):
+            if not n.isalpha():
+                raise InvalidNameError("Numele disciplinei este invalid!\n")
+
+    def validateOptional(self, isOptional):
+        if isOptional not in [True, False]:
+            raise InvalidOptional("Nu a fost specificat caracterul disciplinei (optional sau obligatoriu)!\n")

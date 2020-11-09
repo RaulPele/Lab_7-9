@@ -1,5 +1,5 @@
 
-from validation.errors import  StudentAlreadyExistsError, DisciplineAlreadyExistsError
+from validation.errors import  StudentAlreadyExistsError, DisciplineAlreadyExistsError, NonExistentIDError
 
 class Catalogue():
     def __init__(self):
@@ -77,6 +77,22 @@ class Catalogue():
         if newDiscipline.getIsOptional() == False:
             self.addDisciplineToStudents(newDiscipline)
         return
+
+    def removeStudentByID(self, ID):
+        for i in range(0, len(self.__students)):
+            student = self.__students[i]
+            if student.getID() == ID:
+                del self.__students[i]
+                return
+        raise NonExistentIDError("ID-ul dat nu se afla in lista studentilor!\n")
+
+    def removeDisciplineByID(self, ID):
+        for i in range(0, len(self.__disciplines)):
+            discipline = self.__disciplines[i]
+            if discipline.getID() == ID:
+                del self.__disciplines[i]
+                return
+        raise NonExistentIDError("ID-ul dat nu se afla in lista disciplinelor!\n")
 
     def getStudents(self):
         return self.__students

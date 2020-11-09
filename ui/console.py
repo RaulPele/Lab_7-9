@@ -1,6 +1,6 @@
 from ui.menu import Menu
-from validation.errors import InvalidStudentError, StudentAlreadyExistsError
-from validation.errors import InvalidDisciplineError, DisciplineAlreadyExistsError
+from validation.errors import InvalidStudentError, StudentAlreadyExistsError, InvalidIDError
+from validation.errors import InvalidDisciplineError, DisciplineAlreadyExistsError, NonExistentIDError
 from utils.colors import  Colors
 
 class Console:
@@ -28,12 +28,22 @@ class Console:
         printMenu.addFunction(self.printDisciplines)
         printMenu.addItem("3. Inapoi...")
 
+        removeMenu = Menu()
+        removeMenu.addItem("1. Sterge un student din lista")
+        removeMenu.addFunction(self.removeStudent)
+        removeMenu.addItem("2. Sterge o disciplina din lista")
+        removeMenu.addFunction(self.removeDiscipline)
+        removeMenu.addItem("3. Inapoi...")
+
+
         mainMenu = Menu()
         mainMenu.addItem("1. Adaugare")
         mainMenu.addItem("2. Afisare")
-        mainMenu.addItem("3. Iesire")
+        mainMenu.addItem("3. Stergere")
+        mainMenu.addItem("4. Iesire")
         mainMenu.addSubMenu(addMenu)
         mainMenu.addSubMenu(printMenu)
+        mainMenu.addSubMenu(removeMenu)
         Menu.initializeStack(mainMenu)
 
     def __displayMenu(self):
@@ -98,7 +108,7 @@ class Console:
             self.printDisciplines()
         input("Apasati enter pentru a continua...\n")
 
-    def printStudents(self):
+    def printStudents(self, message = "Studentii din cadrul facultatii: \n"):
         """
         Afiseaza studentii din cadrul facultatii
         """
@@ -108,23 +118,58 @@ class Console:
             print(Colors.GREEN+ "Lista studentilor este goala.\n" +Colors.RESET)
             return
 
-        print(Colors.RED + "Studentii din cadrul facultatii: \n")
+        print(Colors.RED + message)
         for student in students:
             print(Colors.RED + "ID: " + Colors.GREEN + student.getID())
             print(Colors.RED + "Nume: " + Colors.GREEN+ student.getLastName())
             print(Colors.RED + "Prenume: " + Colors.GREEN + student.getFirstName())
             print(Colors.RESET)
 
-    def printDisciplines(self):
+    def printDisciplines(self, message = "Disciplinele din cadrul facultatii: \n"):
         disciplines = self.__disciplineSrv.getDisciplines()
 
         if len(disciplines) == 0:
             print(Colors.GREEN + "Lista disciplinelor este goala.\n" + Colors.RESET)
             return
 
-        print (Colors.RED + "Disciplinele din cadrul facultatii: \n")
+        print (Colors.RED + message)
         for discipline in disciplines:
             print(discipline)
+
+    def removeStudent(self):
+        if len(self.__studentSrv.getStudents()) == 0:
+            print(Colors.GREEN + "Lista este goala.\n" + Colors.RESET)
+            return
+        self.printStudents()
+
+        identifier = input("Dati ID-ul studentului care se va elimina: ")
+        try:
+            self.__studentSrv.removeStudent(identifier)
+        except InvalidIDError as err:
+            print(str(err))
+        except NonExistentIDError as err:
+            print(str(err))
+        else:
+            self.printStudents("Lista de studenti obtinuta in urma eliminarii: \n")
+            input("Apasati Enter pentru a continua...")
+
+    def removeDiscipline(self):
+        if len(self.__disciplineSrv.getDisciplines()) == 0:
+            print(Colors.GREEN + "Lista este goala.\n" + Colors.RESET)
+            return
+        self.printDisciplines()
+
+        identifier = input("Dati ID-ul disciplinei care se va elimina: ")
+        try:
+            self.__disciplineSrv.removeDiscipline(identifier)
+        except InvalidIDError as err:
+            print(str(err))
+        except NonExistentIDError as err:
+            print(str(err))
+        else:
+            self.printDisciplines("Lista de discipline obtinuta in urma eliminarii: \n")
+            input("Apasa Enter pentru a continua...")
+
 
     def run(self):
 

@@ -1,7 +1,7 @@
 from domain.student import Student
 from domain.discipline import  Discipline
 from validation.errors import InvalidStudentError, StudentAlreadyExistsError, InvalidDisciplineError
-from validation.errors import DisciplineAlreadyExistsError
+from validation.errors import DisciplineAlreadyExistsError, InvalidIDError, NonExistentIDError
 
 
 class StudentSrv:
@@ -35,6 +35,17 @@ class StudentSrv:
     def getStudents(self):
         return self.__catalogue.getStudents()
 
+    def removeStudent(self, identifier):
+        try:
+            self.__validator.validateID(identifier)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
+
+        try:
+            self.__catalogue.removeStudentByID(identifier)
+        except NonExistentID as err:
+            raise NonExistentID(str(err))
+
 
 class DisciplineService:
     def __init__(self, catalogue, validator):
@@ -61,6 +72,17 @@ class DisciplineService:
             self.__catalogue.addDiscipline(newDiscipline)
         except DisciplineAlreadyExistsError as err:
             raise DisciplineAlreadyExistsError(str(err))
+
+    def removeDiscipline(self, identifier):
+        try:
+            self.__validator.validateID(identifier)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
+
+        try:
+            self.__catalogue.removeDisciplineByID(identifier)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
 
     def getDisciplines(self):
         return self.__catalogue.getDisciplines()
