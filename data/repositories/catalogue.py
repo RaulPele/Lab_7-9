@@ -80,7 +80,7 @@ class Catalogue():
 
         if newDiscipline.getIsOptional() == False:
             self.addDisciplineToStudents(newDiscipline)
-        return
+
 
     def removeStudentByID(self, ID):
         """
@@ -100,7 +100,7 @@ class Catalogue():
         Sterge disciplina discipline din lista de discipline a studentilor
         :param discipline: obiect de tip Discipline()
         """
-        for student in self.getStudents():
+        for student in self.__students:
             student.removeDiscipline(discipline)
 
     def removeDisciplineByID(self, ID):
@@ -128,12 +128,31 @@ class Catalogue():
                 return student
         raise NonExistentIDError("Studentul cu ID-ul dat nu se afla in lista studentilor!\n")
 
+    def findDisciplineByID(self, ID):
+        """
+        Returneaza studentul cu id-ul ID din lista
+        raise NonExistentIDError - daca disciplina nu exista in lista
+        :param ID:  id-ul disciplinei - string
+        """
+        for discipline in self.__disciplines:
+            if discipline.getID() == ID:
+                return discipline
+        raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
+
+    def assignGrade(self, studID, discID, grade):
+        try:
+            student = self.findStudentByID(studID)
+            discipline = self.findDisciplineByID(discID)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+        else:
+            student.addGrade(discipline, grade)
 
     def getStudents(self):
-        return self.copyStudents()
+        return self.__students
 
     def getDisciplines(self):
-        return self.copyDisciplines()
+        return self.__disciplines
 
     def getOptionals(self):
         optionals = []

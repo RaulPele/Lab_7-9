@@ -1,5 +1,5 @@
 from validation.errors import  InvalidStudentError, InvalidDisciplineError, InvalidIDError
-from validation.errors import InvalidNameError, InvalidOptional
+from validation.errors import InvalidNameError, InvalidOptional, InvalidGradeError
 
 class StudentValidator:
 
@@ -57,6 +57,10 @@ class StudentValidator:
 
         if len(errors) != 0:
             raise InvalidNameError(errors)
+
+    def validateGrade(self, grade):
+        if grade<1 or grade > 10:
+            raise InvalidGradeError("Nota trebuie as fie un numar real intre 1 si 10!\n")
 
 
 

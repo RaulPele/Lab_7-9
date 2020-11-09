@@ -1,6 +1,7 @@
 from ui.menu import Menu
 from validation.errors import InvalidStudentError, StudentAlreadyExistsError, InvalidIDError
 from validation.errors import InvalidDisciplineError, DisciplineAlreadyExistsError, NonExistentIDError
+from validation.errors import InvalidGradeError
 from utils.colors import  Colors
 
 class Console:
@@ -40,17 +41,23 @@ class Console:
         searchMenu.addFunction(self.findStudent)
         searchMenu.addItem("2. Inapoi...")
 
+        gradesMenu = Menu()
+        gradesMenu.addItem("1. Asigneaza o nota unui student la o materie")
+        gradesMenu.addFunction(self.assignGrade)
+        gradesMenu.addItem("2. Inapoi...")
 
         mainMenu = Menu()
         mainMenu.addItem("1. Adaugare")
         mainMenu.addItem("2. Afisare")
         mainMenu.addItem("3. Stergere")
         mainMenu.addItem("4. Cautare")
-        mainMenu.addItem("5. Iesire")
+        mainMenu.addItem("5. Note")
+        mainMenu.addItem("6. Iesire")
         mainMenu.addSubMenu(addMenu)
         mainMenu.addSubMenu(printMenu)
         mainMenu.addSubMenu(removeMenu)
         mainMenu.addSubMenu(searchMenu)
+        mainMenu.addSubMenu(gradesMenu)
         Menu.initializeStack(mainMenu)
 
     def __displayMenu(self):
@@ -242,6 +249,47 @@ class Console:
             print(str(err))
         else:
             print(student)
+
+    def assignGrade(self):
+        """
+        Ia datele necesare pentru a atribui o nota unui student la o materie
+        raise InvalidIDError - daca id-ul studentului sau al disciplinei nu este corect
+        """
+        if len(self.__studentSrv.getStudents())==0:
+            print(Colors.GREEN + "Lista studentilor este goala.\n" + Colors.RESET)
+            return
+        if len(self.__disciplineSrv.getDisciplines())==0:
+            print(Colors.GREEN + "Lista disciplinelor este goala.\n" + Colors.RESET)
+            return
+        self.printStudents()
+
+        identifier = input("Dati ID-ul studentului care primeste nota: \n")
+        try:
+            student = self.__studentSrv.findStudent(identifier)
+        except InvalidIDError as err:
+            print(str(err))
+        except NonExistentIDError as err:
+            print(str(err))
+        else:
+            print(student)
+            disciplineIdentifier = input("Dati ID-ul disciplinei la care va primi studentul nota: \n")
+            grade = input("Dati nota: \n")
+            try:
+                grade = float(grade)
+            except ValueError:
+                print("Nota trebuie sa fie de tipul float!\n")
+                return
+
+            try:
+                self.__studentSrv.assignGrade(identifier, disciplineIdentifier, grade)
+            except InvalidIDError as err:
+                print(str(err))
+            except InvalidGradeError as err:
+                print(str(err))
+
+
+
+
 
     def run(self):
         """Functia principala care executa programul"""

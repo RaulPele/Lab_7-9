@@ -92,6 +92,7 @@ class Student:
                 if self.__disciplines[i] == discipline:
                     del self.__disciplines[i]
                     del self.__grades[discipline.getID()]
+                    self.__calculateAverage()
                     return
 
     def addGrade(self, discipline, grade):
@@ -104,6 +105,19 @@ class Student:
             self.__grades[discipline.getID()] = []
         else:
             self.__grades[discipline.getID()].append(grade)
+            self.__calculateAverage()
+
+    def __calculateAverage(self):
+        sum = 0
+        numOfGrades = 0
+        for list in self.__grades.values():
+            for grade in list:
+                sum +=grade
+                numOfGrades +=1
+        if numOfGrades!=0:
+            self.__genAverage = sum/numOfGrades
+        else:
+            self.__genAverage = 0
 
     def makeCopy(self):
         copy = Student(self.getID(), self.getFirstName(), self.getLastName())

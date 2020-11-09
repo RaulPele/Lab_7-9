@@ -2,6 +2,7 @@ from domain.student import Student
 from domain.discipline import  Discipline
 from validation.errors import InvalidStudentError, StudentAlreadyExistsError, InvalidDisciplineError
 from validation.errors import DisciplineAlreadyExistsError, InvalidIDError, NonExistentIDError
+from validation.errors import InvalidGradeError
 
 
 class StudentSrv:
@@ -69,6 +70,18 @@ class StudentSrv:
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
         return student
+
+    def assignGrade(self, studIdentifier, discIdentifier, grade):
+        try:
+            self.__validator.validateGrade(grade)
+        except InvalidGradeError as err:
+            raise InvalidGradeError(str(err))
+
+        try:
+            self.__catalogue.assignGrade(studIdentifier, discIdentifier, grade)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+
 
 
 class DisciplineService:
