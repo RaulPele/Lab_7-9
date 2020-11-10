@@ -140,6 +140,12 @@ class Catalogue():
         raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
 
     def assignGrade(self, studID, discID, grade):
+        """
+        Asociaza o nota studentului studID la disciplina discID
+        :param studID: id student -string
+        :param discID: id disc - string
+        :param grade: int - nota
+        """
         try:
             student = self.findStudentByID(studID)
             discipline = self.findDisciplineByID(discID)
@@ -149,6 +155,12 @@ class Catalogue():
             student.addGrade(discipline, grade)
 
     def selectOptionalsByID(self, IDStudent, IDDiscipline):
+        """
+        Adauga disciplina optionala IDDiscipline studentului IDStudent
+        :param IDStudent:
+        :param IDDiscipline:
+        :return:
+        """
         try:
             student = self.findStudentByID(IDStudent)
             discipline = self.findDisciplineByID(IDDiscipline)

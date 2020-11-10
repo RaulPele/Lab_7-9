@@ -123,8 +123,6 @@ class Student:
         copy = Student(self.getID(), self.getFirstName(), self.getLastName())
         return copy
 
-
-
     def formatName(self):
         """
         Formateaza campurile studentului
