@@ -36,7 +36,7 @@ class StudentValidator:
         raise InvalidIDError- daca id-ul este invalid
         """
         if not id.isnumeric():
-            raise InvalidIDError("ID-ul studentului este invalid! \n")
+            raise InvalidIDError("ID-ul studentului este invalid!\n")
 
     def validateName(self, firstName, lastName):
         """
@@ -110,7 +110,7 @@ class DisciplineValidator:
         raise InvalidIDError - daca id-ul nu este valid
         """
         if not id.isnumeric():
-            raise InvalidIDError("ID-ul disciplinei este invalid! \n")
+            raise InvalidIDError("ID-ul disciplinei este invalid!\n")
 
     def validateTeacher(self, firstName, lastName):
         """

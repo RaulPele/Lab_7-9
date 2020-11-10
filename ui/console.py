@@ -292,6 +292,9 @@ class Console:
                 print(str(err))
             except InvalidGradeError as err:
                 print(str(err))
+            else:
+                print(student)
+                input("Apasati Enter pentru a continua...")
 
 
 

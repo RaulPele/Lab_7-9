@@ -83,9 +83,6 @@ class StudentSrv:
             raise NonExistentIDError(str(err))
 
 
-
-
-
 class DisciplineService:
     def __init__(self, catalogue, validator):
         self.__catalogue = catalogue
