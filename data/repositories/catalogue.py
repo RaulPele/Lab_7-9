@@ -148,6 +148,17 @@ class Catalogue():
         else:
             student.addGrade(discipline, grade)
 
+    def selectOptionalsByID(self, IDStudent, IDDiscipline):
+        try:
+            student = self.findStudentByID(IDStudent)
+            discipline = self.findDisciplineByID(IDDiscipline)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+        else:
+            student.addDiscipline(discipline)
+
+
+
     def getStudents(self):
         return self.__students
 

@@ -94,7 +94,7 @@ class Console:
         function = currentMenu.getFunction(op)
         function()
 
-    def selectOptionals(self, student):
+    def selectOptionals(self, IDStudent):
         """
         Preia de la utilizator datele corespunzatoare optionalelor si le adauga in lista de discipline
         pentru studentul student
@@ -114,15 +114,20 @@ class Console:
             return
 
         while len(disciplines) !=0:
+            for discipline in disciplines:
+                print(discipline)
+
             option = input("Dati id-ul disciplinei optionale dorite sau tastati exit: \n").lower()
             if option =="exit":
                 break
-            for i in range(0, len(disciplines)):
-                if disciplines[i].getID() == option:
-                    student.addDiscipline(disciplines[i])
-                    del disciplines[i]
-                    for discipline in disciplines:
-                        print(discipline)
+            try:
+                self.__disciplineSrv.selectOptionals(IDStudent, option)
+            except InvalidIDError as err:
+                print(str(err))
+            except NonExistentIDError as err:
+                print(str(err))
+            else:
+                disciplines = [d for d in disciplines if d.getID()!=option]
 
     def addStudent(self):
         """
@@ -141,7 +146,7 @@ class Console:
         except StudentAlreadyExistsError as err:
             print(str(err))
         else:
-            self.selectOptionals(self.__studentSrv.findStudent(IDStudent))
+            self.selectOptionals(IDStudent)
             self.printStudents()
         input("Apasati Enter pentru a continua...\n")
 
@@ -249,6 +254,7 @@ class Console:
             print(str(err))
         else:
             print(student)
+            input("Apsati Enter pentru a continua...")
 
     def assignGrade(self):
         """

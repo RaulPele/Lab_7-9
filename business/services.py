@@ -84,6 +84,8 @@ class StudentSrv:
 
 
 
+
+
 class DisciplineService:
     def __init__(self, catalogue, validator):
         self.__catalogue = catalogue
@@ -133,3 +135,15 @@ class DisciplineService:
     def getOptionals(self):
         "Returneaza lista de discipline optionale din catalog"
         return self.__catalogue.getOptionals()
+
+    def selectOptionals(self, IDStudent, identifier):
+        """Selecteaza disciplina optionala cu identificata prin identifier"""
+        try:
+            self.__validator.validateID(identifier)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
+
+        try:
+            self.__catalogue.selectOptionalsByID(IDStudent, identifier)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
