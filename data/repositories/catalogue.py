@@ -1,10 +1,12 @@
 
-from validation.errors import  StudentAlreadyExistsError, DisciplineAlreadyExistsError, NonExistentIDError
+from validation.errors import StudentAlreadyExistsError, DisciplineAlreadyExistsError, NonExistentIDError
 
 class Catalogue():
+
     def __init__(self):
         self.__students = []
         self.__disciplines = []
+        self.__grades = {}
 
     def __enrollStudent(self, newStudent):
         """
@@ -139,20 +141,26 @@ class Catalogue():
                 return discipline
         raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
 
-    def assignGrade(self, studID, discID, grade):
+    def assignGrade(self, grade):
         """
         Asociaza o nota studentului studID la disciplina discID
         :param studID: id student -string
         :param discID: id disc - string
-        :param grade: int - nota
+        :param grade: nota - obiect Grade()
         """
         try:
-            student = self.findStudentByID(studID)
-            discipline = self.findDisciplineByID(discID)
+            student = self.findStudentByID(grade.getStudentID())
+            discipline = self.findDisciplineByID(grade.getDisciplineID())
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
+
+        if discipline.getName() not in self.__grades:
+            self.__grades[discipline.getID()] =[]
         else:
-            student.addGrade(discipline, grade)
+            self.__grades[discipline.getID()].append(grade)
+
+        student.addGrade(discipline, grade)
+
 
     def selectOptionalsByID(self, IDStudent, IDDiscipline):
         """
@@ -184,16 +192,4 @@ class Catalogue():
                 optionals.append(discipline)
         return optionals
 
-    def copyDisciplines(self):
-        """Returneaza o copie a listei de discipline"""
-        copy = []
-        for discipline in self.__disciplines:
-            copy.append(discipline.makeCopy())
-        return copy
 
-    def copyStudents(self):
-        "Returneaza o copie a listei de studenti"
-        copy = []
-        for student in self.__students:
-            copy.append(student.makeCopy())
-        return copy

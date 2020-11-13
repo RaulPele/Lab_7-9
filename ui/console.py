@@ -5,10 +5,11 @@ from validation.errors import InvalidGradeError
 from utils.colors import  Colors
 
 class Console:
-    def __init__(self, studentSrv, disciplineSrv):
+    def __init__(self, studentSrv, disciplineSrv, gradeSrv):
         self.__createMenu()
         self.__studentSrv = studentSrv
         self.__disciplineSrv = disciplineSrv
+        self.__gradeSrv = gradeSrv
 
     def __createMenu(self):
         """
@@ -287,16 +288,16 @@ class Console:
                 return
 
             try:
-                self.__studentSrv.assignGrade(identifier, disciplineIdentifier, grade)
+                self.__gradeSrv.assignGrade(identifier, disciplineIdentifier, grade)
             except InvalidIDError as err:
                 print(str(err))
             except InvalidGradeError as err:
                 print(str(err))
+            except NonExistentIDError as err:
+                print(str(err))
             else:
                 print(student)
                 input("Apasati Enter pentru a continua...")
-
-
 
 
 

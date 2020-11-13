@@ -1,21 +1,24 @@
 from ui.console import Console
-from business.services import StudentSrv, DisciplineService
+from business.studentService import StudentService
+from business.disciplineService import DisciplineService
+from business.gradeService import GradeService
 from data.repositories.catalogue import  Catalogue
-from validation.validators import  StudentValidator, DisciplineValidator
+from validation.validators import  StudentValidator, DisciplineValidator, GradeValidator
 from tests.tests import Tests
-class test:
-    def f(self):
-        print("hello")
+
 
 if __name__ == "__main__":
     catalogue = Catalogue()
     studentValidator = StudentValidator()
-    studentSrv = StudentSrv(catalogue, studentValidator)
+    studentSrv = StudentService(catalogue, studentValidator)
     disciplineValidator = DisciplineValidator()
     disciplineSrv = DisciplineService(catalogue, disciplineValidator)
-    console = Console(studentSrv, disciplineSrv)
+    gradeValidator = GradeValidator()
+    gradeSrv = GradeService(catalogue, disciplineValidator, studentValidator, gradeValidator)
+
+    console = Console(studentSrv, disciplineSrv, gradeSrv)
     tests = Tests()
-    tests.runTests()
+   # tests.runTests()
     console.run()
 
 

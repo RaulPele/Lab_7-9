@@ -58,12 +58,6 @@ class StudentValidator:
         if len(errors) != 0:
             raise InvalidNameError(errors)
 
-    def validateGrade(self, grade):
-        if grade<1 or grade > 10:
-            raise InvalidGradeError("Nota trebuie as fie un numar real intre 1 si 10!\n")
-
-
-
 
 class DisciplineValidator:
 
@@ -150,3 +144,10 @@ class DisciplineValidator:
         """
         if isOptional not in [True, False]:
             raise InvalidOptional("Nu a fost specificat caracterul disciplinei (optional sau obligatoriu)!\n")
+
+
+class GradeValidator:
+
+    def validateGrade(self, grade):
+        if grade<1 or grade > 10:
+            raise InvalidGradeError("Nota trebuie as fie un numar real intre 1 si 10!\n")

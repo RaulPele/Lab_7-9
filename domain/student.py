@@ -1,4 +1,5 @@
 from utils.colors import Colors
+from domain.grade import Grade
 class Student:
     def __init__(self, IDStudent, firstName, lastName):
         self.__IDStudent = IDStudent
@@ -24,7 +25,7 @@ class Student:
     def getAverage(self):
         return self.__genAverage
 
-    def getGrade(self, discipline):
+    def getGrades(self, discipline):
         return self.__grades[discipline.getID()]
 
     def getDisciplines(self):
@@ -55,7 +56,12 @@ class Student:
                 Colors.RED + "Medie generala: " + Colors.GREEN + str(self.getAverage()) + "\n\n"
         for discipline in self.getDisciplines():
             output += str(discipline)
-            output+= Colors.RED +"Note: " + Colors.GREEN + str(self.getGrade(discipline)) + "\n\n"
+            grades = ""
+            for grade in self.getGrades(discipline):
+                grades += str(grade.getValue()) +", "
+            grades = grades[0:len(grades)-2]
+
+            output+= Colors.RED +"Note: " + Colors.GREEN + grades + "\n\n"
         output+=Colors.RESET
         return output
 
@@ -67,7 +73,7 @@ class Student:
         """
         if len(self.__disciplines) ==0:
             self.__disciplines.append(discipline)
-            self.addGrade(discipline, 0)
+            self.addGrade(discipline, Grade())
             return
 
         oldSize = len(self.__disciplines)
@@ -79,7 +85,7 @@ class Student:
 
         if oldSize == len(self.__disciplines):
             self.__disciplines.append(discipline)
-        self.addGrade(discipline, 0)
+        self.addGrade(discipline, Grade())
 
     def removeDiscipline(self, discipline):
         """
@@ -99,7 +105,7 @@ class Student:
         """
         Adauga o nota la disciplina discipline
         :param discipline: disciplina Discipline()
-        :param grade: nota - int
+        :param grade: nota - Grade()
         """
         if discipline.getID() not in self.__grades.keys():
             self.__grades[discipline.getID()] = []
@@ -112,7 +118,7 @@ class Student:
         numOfGrades = 0
         for list in self.__grades.values():
             for grade in list:
-                sum +=grade
+                sum +=grade.getValue()
                 numOfGrades +=1
         if numOfGrades!=0:
             self.__genAverage = sum/numOfGrades

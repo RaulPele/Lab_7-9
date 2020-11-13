@@ -3,7 +3,8 @@ import domain.student
 import domain.discipline
 import validation.errors
 import validation.validators
-import business.services
+import business.studentService
+import business.disciplineService
 
 class Tests:
 
@@ -210,7 +211,7 @@ class Tests:
     def testAddStudentSrv(self):
         validator = validation.validators.StudentValidator()
         catalogue = data.repositories.catalogue.Catalogue()
-        studentSrv = business.services.StudentSrv(catalogue, validator)
+        studentSrv = business.studentService.StudentService(catalogue, validator)
 
         try:
             studentSrv.addStudent("1", "Raul", "Pele")
@@ -235,7 +236,7 @@ class Tests:
     def testAddDisciplineSrv(self):
         validator = validation.validators.DisciplineValidator()
         catalogue = data.repositories.catalogue.Catalogue()
-        disciplineSrv = business.services.DisciplineService(catalogue, validator)
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
 
         try:
             disciplineSrv.addDiscipline("1", "ASC", "A", "B", "nu")
@@ -260,7 +261,7 @@ class Tests:
     def testRemoveStudentSrv(self):
         validator = validation.validators.StudentValidator()
         catalogue = data.repositories.catalogue.Catalogue()
-        studentSrv = business.services.StudentSrv(catalogue, validator)
+        studentSrv = business.studentService.StudentService(catalogue, validator)
 
         try:
             studentSrv.removeStudent("1aj3")
@@ -284,7 +285,7 @@ class Tests:
     def testRemoveDisciplineSrv(self):
         validator = validation.validators.DisciplineValidator()
         catalogue = data.repositories.catalogue.Catalogue()
-        disciplineSrv = business.services.DisciplineService(catalogue, validator)
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
 
         try:
             disciplineSrv.removeDiscipline("aseqw")
@@ -308,7 +309,7 @@ class Tests:
     def testFindStudentSrv(self):
         validator = validation.validators.StudentValidator()
         catalogue = data.repositories.catalogue.Catalogue()
-        studentSrv = business.services.StudentSrv(catalogue, validator)
+        studentSrv = business.studentService.StudentService(catalogue, validator)
 
         catalogue.addStudent(domain.student.Student("1", "Raul", "Pele"))
 
