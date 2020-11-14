@@ -1,7 +1,7 @@
 from ui.menu import Menu
 from validation.errors import InvalidStudentError, StudentAlreadyExistsError, InvalidIDError
 from validation.errors import InvalidDisciplineError, DisciplineAlreadyExistsError, NonExistentIDError
-from validation.errors import InvalidGradeError
+from validation.errors import InvalidGradeError, NonExistentStudentError
 from utils.colors import  Colors
 
 class Console:
@@ -209,12 +209,12 @@ class Console:
             return
         self.printStudents()
 
-        identifier = input("Dati ID-ul studentului care se va elimina: ")
+        identifier = input("Dati ID-ul sau numele (prenume nume) studentului care se va elimina: ").strip()
         try:
             self.__studentSrv.removeStudent(identifier)
-        except InvalidIDError as err:
+        except NonExistentStudentError as err:
             print(str(err))
-        except NonExistentIDError as err:
+        except InvalidStudentError as err:
             print(str(err))
         else:
             self.printStudents("Lista de studenti obtinuta in urma eliminarii: \n")
@@ -234,6 +234,7 @@ class Console:
             print(str(err))
         except NonExistentIDError as err:
             print(str(err))
+
         else:
             self.printDisciplines("Lista de discipline obtinuta in urma eliminarii: \n")
             input("Apasa Enter pentru a continua...")

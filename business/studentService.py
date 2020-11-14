@@ -1,7 +1,7 @@
 from domain.student import Student
-from validation.errors import InvalidStudentError, StudentAlreadyExistsError, InvalidDisciplineError
-from validation.errors import DisciplineAlreadyExistsError, InvalidIDError, NonExistentIDError
-from validation.errors import InvalidGradeError
+from validation.errors import InvalidStudentError, StudentAlreadyExistsError
+from validation.errors import InvalidIDError, NonExistentIDError
+from validation.errors import InvalidNameError, NonExistentStudentError
 
 class StudentService:
     """
@@ -44,13 +44,25 @@ class StudentService:
         """
         try:
             self.__validator.validateID(identifier)
-        except InvalidIDError as err:
-            raise InvalidIDError(str(err))
+        except InvalidIDError as idErr:
 
-        try:
-            self.__catalogue.removeStudentByID(identifier)
-        except NonExistentIDError as err:
-            raise NonExistentIDError(str(err))
+            try:
+                names = identifier.split(" ")
+                self.__validator.validateName(names[0], names[1])
+            except InvalidNameError:
+                raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
+            except IndexError:
+                raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
+
+            try:
+                self.__catalogue.removeStudentByName(identifier)
+            except NonExistentStudentError as err:
+                raise NonExistentStudentError(str(err))
+        else:
+            try:
+                self.__catalogue.removeStudentByID(identifier)
+            except NonExistentStudentError as err:
+                raise NonExistentStudentError(str(err))
 
     def findStudent(self, identifier):
         """

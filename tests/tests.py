@@ -1,6 +1,7 @@
 import data.repositories.catalogue
 import domain.student
 import domain.discipline
+import domain.grade
 import validation.errors
 import validation.validators
 import business.studentService
@@ -111,8 +112,8 @@ class Tests:
         try:
             catalogue.removeStudentByID("100")
             assert (False)
-        except validation.errors.NonExistentIDError as err:
-            assert (str(err) == "ID-ul dat nu se afla in lista studentilor!\n")
+        except validation.errors.NonExistentStudentError as err:
+            assert (str(err) == "Studentul cu ID-ul dat nu se afla in lista!\n")
 
     def testRemoveDisciplineByID(self):
         catalogue = data.repositories.catalogue.Catalogue()
@@ -150,19 +151,19 @@ class Tests:
         catalogue.addStudent(student2)
 
         try:
-            catalogue.assignGrade("1", "1", 10)
-            assert(student2.getGrade(discipline) == [10])
+            catalogue.assignGrade(domain.grade.Grade(10, "1", "1"))
+            assert(student2.getGrades(discipline) == [domain.grade.Grade(10, "1", "1")])
         except Exception as err:
             assert False
 
         try:
-            catalogue.assignGrade("123231", "1", 10)
+            catalogue.assignGrade(domain.grade.Grade(10, "123123", "1"))
             assert False
         except validation.errors.NonExistentIDError as err:
             assert str(err) == "Studentul cu ID-ul dat nu se afla in lista studentilor!\n"
 
         try:
-            catalogue.assignGrade("1", "1123123", 10)
+            catalogue.assignGrade(domain.grade.Grade(10, "1", "12312"))
             assert False
         except validation.errors.NonExistentIDError as err:
             assert str(err) == "Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n"
@@ -266,14 +267,14 @@ class Tests:
         try:
             studentSrv.removeStudent("1aj3")
             assert False
-        except validation.errors.InvalidIDError as err:
-            assert str(err) == "ID-ul studentului este invalid!\n"
+        except validation.errors.InvalidStudentError as err:
+            assert str(err) == "Numele sau ID-ul studentului este invalid!\n"
 
         try:
             studentSrv.removeStudent("1")
             assert False
-        except validation.errors.NonExistentIDError as err:
-            assert str(err) == "ID-ul dat nu se afla in lista studentilor!\n"
+        except validation.errors.NonExistentStudentError as err:
+            assert str(err) == "Studentul cu ID-ul dat nu se afla in lista!\n"
 
         catalogue.addStudent(domain.student.Student("1", "Raul", "Pele"))
         try:
@@ -281,6 +282,18 @@ class Tests:
             assert True
         except Exception:
             assert False
+
+        catalogue.addStudent(domain.student.Student("1", "Raul", "Pele"))
+        try:
+            studentSrv.removeStudent("Raul Pele")
+            assert True
+        except Exception:
+            assert False
+
+        try:
+            studentSrv.removeStudent("Raul")
+        except validation.errors.InvalidStudentError as err:
+            assert str(err) == "Numele sau ID-ul studentului este invalid!\n"
 
     def testRemoveDisciplineSrv(self):
         validator = validation.validators.DisciplineValidator()

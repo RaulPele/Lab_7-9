@@ -13,3 +13,7 @@ class Grade:
     def getDisciplineID(self):
         return self.__IDDiscipline
 
+    def __eq__(self, other):
+        return self.__value == other.__value and self.__IDStudent == other.__IDStudent and self.__IDDiscipline == other.__IDDiscipline
+
+

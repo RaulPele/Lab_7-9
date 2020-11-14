@@ -1,5 +1,6 @@
 
 from validation.errors import StudentAlreadyExistsError, DisciplineAlreadyExistsError, NonExistentIDError
+from validation.errors import NonExistentStudentError
 
 class Catalogue():
 
@@ -87,7 +88,7 @@ class Catalogue():
     def removeStudentByID(self, ID):
         """
         Sterge studentul identificat cu ID din lista
-        raise NonExistentIDError - daca nu exista student cu id-ul ID in lista
+        raise NonExistentStudentError - daca nu exista student cu id-ul ID in lista
         :param ID: string - id-ul studentului
         """
         for i in range(0, len(self.__students)):
@@ -95,7 +96,22 @@ class Catalogue():
             if student.getID() == ID:
                 del self.__students[i]
                 return
-        raise NonExistentIDError("ID-ul dat nu se afla in lista studentilor!\n")
+        raise NonExistentStudentError("Studentul cu ID-ul dat nu se afla in lista!\n")
+
+    #TODO: write test function
+    def removeStudentByName(self, name):
+        studentsDeleted = False
+        i=0
+        while i < len(self.__students):
+            student = self.__students[i]
+            if student.getName().lower() == name.lower():
+                del self.__students[i]
+                studentsDeleted = True
+                continue
+            i+=1
+
+        if not studentsDeleted:
+            raise NonExistentStudentError("Studentul cu numele dat nu se afla in lista!\n")
 
     def removeDisciplineForStudents(self, discipline):
         """

@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     console = Console(studentSrv, disciplineSrv, gradeSrv)
     tests = Tests()
-   # tests.runTests()
+    tests.runTests()
     console.run()
 
 
