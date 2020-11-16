@@ -1,7 +1,7 @@
 from ui.menu import Menu
 from validation.errors import InvalidStudentError, StudentAlreadyExistsError, InvalidIDError
 from validation.errors import InvalidDisciplineError, DisciplineAlreadyExistsError, NonExistentIDError
-from validation.errors import InvalidGradeError, NonExistentStudentError
+from validation.errors import InvalidGradeError, NonExistentStudentError, NonExistentDisciplineError
 from utils.colors import  Colors
 
 class Console:
@@ -227,12 +227,13 @@ class Console:
             return
         self.printDisciplines()
 
-        identifier = input("Dati ID-ul disciplinei care se va elimina: ")
+        identifier = input("Dati ID-ul sau numele disciplinei care se va elimina: ")
+
         try:
             self.__disciplineSrv.removeDiscipline(identifier)
-        except InvalidIDError as err:
+        except InvalidDisciplineError as err:
             print(str(err))
-        except NonExistentIDError as err:
+        except NonExistentDisciplineError as err:
             print(str(err))
 
         else:

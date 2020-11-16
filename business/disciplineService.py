@@ -1,7 +1,7 @@
 
 from domain.discipline import  Discipline
-from validation.errors import InvalidStudentError, StudentAlreadyExistsError, InvalidDisciplineError
-from validation.errors import DisciplineAlreadyExistsError, InvalidIDError, NonExistentIDError
+from validation.errors import  InvalidDisciplineError, NonExistentDisciplineError
+from validation.errors import DisciplineAlreadyExistsError, InvalidIDError, NonExistentIDError, InvalidNameError
 
 
 class DisciplineService:
@@ -37,13 +37,21 @@ class DisciplineService:
         """
         try:
             self.__validator.validateID(identifier)
-        except InvalidIDError as err:
-            raise InvalidIDError(str(err))
+        except InvalidIDError:
+            try:
+                self.__validator.validateDisciplineName(identifier)
+            except InvalidNameError:
+                raise InvalidDisciplineError("Numele sau ID-ul disciplinei este invalid!\n")
 
-        try:
-            self.__catalogue.removeDisciplineByID(identifier)
-        except NonExistentIDError as err:
-            raise NonExistentIDError(str(err))
+            try:
+                self.__catalogue.removeDisciplineByName(identifier)
+            except NonExistentDisciplineError as err:
+                raise NonExistentDisciplineError(str(err))
+        else:
+            try:
+                self.__catalogue.removeDisciplineByID(identifier)
+            except NonExistentDisciplineError as err:
+                raise NonExistentDisciplineError(str(err))
 
 
     def getDisciplines(self):

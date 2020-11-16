@@ -6,6 +6,7 @@ import validation.errors
 import validation.validators
 import business.studentService
 import business.disciplineService
+import business.gradeService
 
 class Tests:
 
@@ -303,8 +304,8 @@ class Tests:
         try:
             disciplineSrv.removeDiscipline("aseqw")
             assert False
-        except validation.errors.InvalidIDError as err:
-            assert str(err)=="ID-ul disciplinei este invalid!\n"
+        except validation.errors.NonExistentDisciplineError as err:
+            assert str(err)=="Disciplina cu numele dat nu se afla in lista!\n"
 
         try:
             disciplineSrv.removeDiscipline("1")
@@ -315,6 +316,19 @@ class Tests:
         catalogue.addDiscipline(domain.discipline.Discipline("1", "asc", "a", "b"))
         try:
             disciplineSrv.removeDiscipline("1")
+            assert True
+        except Exception:
+            assert False
+
+        try:
+            disciplineSrv.removeDiscipline("1eq")
+        except validation.errors.InvalidDisciplineError as err:
+            assert str(err) == "Numele sau ID-ul disciplinei este invalid!\n"
+
+
+        catalogue.addDiscipline(domain.discipline.Discipline("1", "asc", "a", "b"))
+        try:
+            disciplineSrv.removeDiscipline("aSc")
             assert True
         except Exception:
             assert False
@@ -340,6 +354,80 @@ class Tests:
         except Exception:
             assert False
 
+    def testAssignGradeSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        discValidator = validation.validators.DisciplineValidator()
+        studValidator = validation.validators.StudentValidator()
+        gradeValidator = validation.validators.GradeValidator()
+        gradeSrv = business.gradeService.GradeService(catalogue, discValidator, studValidator, gradeValidator)
+
+        discipline = domain.discipline.Discipline("1", "asc", "a", "b", "nu")
+        student = domain.student.Student("1", "Raul", "Pele")
+        catalogue.addStudent(student)
+        catalogue.addDiscipline(discipline)
+
+        try:
+            grade = domain.grade.Grade(10, "1", "1")
+            gradeSrv.assignGrade("1", "1", 10)
+            assert student.getGrades(discipline) == [grade]
+        except Exception:
+            assert False
+
+        try:
+            grade = domain.grade.Grade(-2, "1A", "132")
+            gradeSrv.assignGrade("1", "1", 10)
+            assert student.getGrades(discipline) == [grade]
+        except Exception:
+            assert False
+
+    def testRemoveStudentByName(self):
+        validator = validation.validators.StudentValidator()
+        catalogue = data.repositories.catalogue.Catalogue()
+        studentSrv = business.studentService.StudentService(catalogue, validator)
+
+        catalogue.addStudent(domain.student.Student("1", "Raul", "Pele"))
+        catalogue.addStudent(domain.student.Student("2", "Raul", "Pele"))
+
+        try:
+            catalogue.removeStudentByName("Andrei H")
+            assert False
+        except validation.errors.NonExistentStudentError as err:
+            assert str(err)=="Studentul cu numele dat nu se afla in lista!\n"
+
+        try:
+            catalogue.removeStudentByName("Raul Pele")
+            assert catalogue.getStudents() == []
+        except Exception:
+            assert False
+
+    def testRemoveDisciplinByName(self):
+        validator = validation.validators.DisciplineValidator()
+        catalogue = data.repositories.catalogue.Catalogue()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        discipline2 = domain.discipline.Discipline("2", "Asc", "B", "C")
+        discipline3 = domain.discipline.Discipline("3", "Asc", "B", "C")
+        disciplineSrv.addDiscipline(discipline1.getID(), discipline1.getName(), discipline1.getTeacherFirst(), discipline1.getTeacherLast(), "nu")
+        disciplineSrv.addDiscipline(discipline2.getID(), discipline2.getName(), discipline2.getTeacherFirst(), discipline2.getTeacherLast(), "da")
+        disciplineSrv.addDiscipline(discipline3.getID(), discipline3.getName(), discipline3.getTeacherFirst(), discipline3.getTeacherLast(), "da")
+
+        try:
+            catalogue.removeDisciplineByName("asc")
+            results = catalogue.getDisciplines()
+            correct = [discipline3]
+            assert self.equalDisciplines(results, correct)
+        except Exception:
+            assert False
+
+        try:
+            catalogue.removeDisciplineByName("asc")
+            assert False
+        except validation.errors.NonExistentDisciplineError as err:
+            assert str(err) == "Disciplina cu numele dat nu se afla in lista!\n"
+
+
+
 
     def runTests(self):
         self.testAddStudent()
@@ -354,3 +442,5 @@ class Tests:
         self.testFindStudentSrv()
         self.testFindStudentByID()
         self.testFindDisciplineByID()
+        #self.testAssignGradeSrv()
+        self.testRemoveStudentByName()

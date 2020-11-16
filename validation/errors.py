@@ -36,6 +36,10 @@ class NonExistentStudentError(Exception):
     def __init__(self, message):
         super().__init__(message)
 
+class NonExistentDisciplineError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
 class InvalidGradeError(Exception):
     def __init__(self, message):
         super().__init__(message)

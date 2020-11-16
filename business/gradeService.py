@@ -9,7 +9,7 @@ class GradeService:
         self.__studValidator = studValidator
         self.__gradeValidator = gradeValidator
 
-    #TODO: test function
+    #TODO: refactor
     def assignGrade(self, studIdentifier, discIdentifier, gradeValue):
         try:
             self.__gradeValidator.validateGrade(gradeValue)
