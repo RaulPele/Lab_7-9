@@ -171,6 +171,22 @@ class Catalogue():
                 return student
         raise NonExistentIDError("Studentul cu ID-ul dat nu se afla in lista studentilor!\n")
 
+    def findStudentByName(self, name):
+        """
+        Returneaza studentii cu numele name din lista
+        raise NonExistentStudentError - daca nu exista studenti cu numele name
+        :param name: nume - string
+        :return students: lista de studenti
+        """
+        students=[]
+        for student in self.__students:
+            if student.getName().lower() == name.lower():
+                students.append(student)
+
+        if len(students) == 0:
+            raise NonExistentStudentError("Studentul cu numele dat nu se afla in lista!\n")
+        return students
+
     def findDisciplineByID(self, ID):
         """
         Returneaza studentul cu id-ul ID din lista

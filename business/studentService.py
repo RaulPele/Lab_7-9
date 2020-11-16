@@ -73,20 +73,32 @@ class StudentService:
 
     def findStudent(self, identifier):
         """
-        Returneaza studentul identificat dupa identifier
+        Returneaza studentul/studentii identificati dupa identifier
         :param identifier: string - identificator pentru student
-        :return: student - studentul corespunzator lui identifier
+        :return: student - studentul corespunzator lui identifier sau lista de studenti
         """
         try:
             self.__validator.validateID(identifier)
         except InvalidIDError as err:
-            raise InvalidIDError(str(err))
+            try:
+                names = identifier.split(" ")
+                self.__validator.validateName(names[0], names[1])
+            except InvalidNameError:
+                raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
+            except IndexError:
+                raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
 
-        try:
-            student = self.__catalogue.findStudentByID(identifier)
-        except NonExistentIDError as err:
-            raise NonExistentIDError(str(err))
-        return student
+            try:
+                students = self.__catalogue.findStudentByName(identifier)
+            except NonExistentStudentError as err:
+                raise NonExistentStudentError(str(err))
+        else:
+            try:
+                students = self.__catalogue.findStudentByID(identifier)
+            except NonExistentIDError as err:
+                raise NonExistentStudentError(str(err))
+        return students
+
 
     def modifyID(self, oldID, newID):
         """

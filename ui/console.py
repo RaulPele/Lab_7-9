@@ -259,15 +259,20 @@ class Console:
             return
         self.printStudents()
 
-        identifier = input("Dati ID-ul studentului pentru care se va face afisarea: \n")
+        identifier = input("Dati ID-ul sau numele studentului pentru care se va face afisarea: \n")
         try:
             student = self.__studentSrv.findStudent(identifier)
-        except InvalidIDError as err:
+        except InvalidStudentError as err:
             print(str(err))
-        except NonExistentIDError as err:
+        except NonExistentStudentError as err:
             print(str(err))
         else:
-            print(student)
+            if isinstance(student, list):
+                for st in student:
+                    print(st)
+            else:
+                print(student)
+
             input("Apsati Enter pentru a continua...")
 
     def __modifyStudentID(self, IDStudent):

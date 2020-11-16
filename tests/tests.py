@@ -343,7 +343,7 @@ class Tests:
         try:
             student = studentSrv.findStudent("2")
             assert False
-        except validation.errors.NonExistentIDError as err:
+        except validation.errors.NonExistentStudentError as err:
             assert str(err) == "Studentul cu ID-ul dat nu se afla in lista studentilor!\n"
 
         try:
@@ -353,6 +353,47 @@ class Tests:
             assert student.getLastName() == "Pele"
         except Exception:
             assert False
+
+        try:
+            student = studentSrv.findStudent("Raul Pele")
+            assert student[0].getID() == "1"
+            assert student[0].getName() == "Raul Pele"
+        except Exception:
+            assert False
+
+        try:
+            student = studentSrv.findStudent("Raul")
+            assert False
+        except validation.errors.InvalidStudentError as err:
+            assert str(err) == "Numele sau ID-ul studentului este invalid!\n"
+
+        catalogue.addStudent(domain.student.Student("2", "Raul", "Pele"))
+        try:
+            students = studentSrv.findStudent("Raul Pele")
+            correct = [domain.student.Student("1", "Raul", "Pele"), domain.student.Student("2", "Raul", "Pele")]
+            assert self.equal(students, correct)
+        except Exception:
+            assert False
+
+    def testFindStudentByName(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+
+        catalogue.addStudent(domain.student.Student("1", "Raul", "Pele"))
+        catalogue.addStudent(domain.student.Student("2", "Raul", "Pele"))
+
+        try:
+            students = catalogue.findStudentByName("Raul Pele")
+            correct = [domain.student.Student("1", "Raul", "Pele"), domain.student.Student("2", "Raul", "Pele")]
+            assert self.equal(students, correct)
+        except Exception:
+            assert False
+
+        try:
+            students = catalogue.findStudentByName("Raul")
+            assert False
+        except validation.errors.NonExistentStudentError as err:
+            assert str(err) == "Studentul cu numele dat nu se afla in lista!\n"
+
 
     def testAssignGradeSrv(self):
         catalogue = data.repositories.catalogue.Catalogue()
@@ -668,4 +709,5 @@ class Tests:
         self.testModifyDiscNameSrv()
         self.testModifyTeacherSrv()
         self.testModifyDiscOptionalSrv()
+        self.testFindStudentByName()
 
