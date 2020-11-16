@@ -400,14 +400,14 @@ class Tests:
         except Exception:
             assert False
 
-    def testRemoveDisciplinByName(self):
+    def testRemoveDisciplineByName(self):
         validator = validation.validators.DisciplineValidator()
         catalogue = data.repositories.catalogue.Catalogue()
         disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
 
         discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
         discipline2 = domain.discipline.Discipline("2", "Asc", "B", "C")
-        discipline3 = domain.discipline.Discipline("3", "Asc", "B", "C")
+        discipline3 = domain.discipline.Discipline("3", "Lc", "B", "C")
         disciplineSrv.addDiscipline(discipline1.getID(), discipline1.getName(), discipline1.getTeacherFirst(), discipline1.getTeacherLast(), "nu")
         disciplineSrv.addDiscipline(discipline2.getID(), discipline2.getName(), discipline2.getTeacherFirst(), discipline2.getTeacherLast(), "da")
         disciplineSrv.addDiscipline(discipline3.getID(), discipline3.getName(), discipline3.getTeacherFirst(), discipline3.getTeacherLast(), "da")
@@ -426,6 +426,117 @@ class Tests:
         except validation.errors.NonExistentDisciplineError as err:
             assert str(err) == "Disciplina cu numele dat nu se afla in lista!\n"
 
+    def testModifyStudentID(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        student1 = domain.student.Student("1", "Raul", "Pele")
+        catalogue.addStudent(student1)
+
+        catalogue.modifyStudentID(student1, "2")
+        assert student1.getID()=="2"
+
+    def testModifyStudentName(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        student1 = domain.student.Student("1", "Raul", "Pele")
+        catalogue.addStudent(student1)
+
+        catalogue.modifyStudentName(student1, "Andrei", "Horvati")
+        assert student1.getName() == "Andrei Horvati"
+
+    def testModifyStudentIDSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        validator = validation.validators.StudentValidator()
+        studentSrv = business.studentService.StudentService(catalogue, validator)
+        student1 = domain.student.Student("1", "Raul", "Pele")
+
+        catalogue.addStudent(student1)
+
+        try:
+            studentSrv.modifyID("1", "2")
+            assert True
+        except Exception:
+            assert False
+
+        try:
+            studentSrv.modifyID("1", "1231eqweq")
+            assert False
+        except validation.errors.InvalidIDError as err:
+            assert str(err) == "ID-ul nou este invalid!\n"
+
+
+    def testModifyStudentNameSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        validator = validation.validators.StudentValidator()
+        studentSrv = business.studentService.StudentService(catalogue, validator)
+        student1 = domain.student.Student("1", "Raul", "Pele")
+
+        catalogue.addStudent(student1)
+
+        try:
+            studentSrv.modifyName("1", "123", "as23")
+            assert False
+        except validation.errors.InvalidNameError as err:
+            assert str(err)=="Prenumele studentului este invalid!\nNumele studentului este invalid!\n"
+
+        try:
+            studentSrv.modifyName("1", "Andrei", "Pele")
+            assert student1.getName() == "Andrei Pele"
+        except Exception:
+            assert False
+
+
+    def testSelectOptionalsByID(self):
+        validator = validation.validators.DisciplineValidator()
+        catalogue = data.repositories.catalogue.Catalogue()
+
+        student = domain.student.Student("1", "Raul", "Pele")
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        discipline2 = domain.discipline.Discipline("2", "Asc", "B", "C")
+        discipline3 = domain.discipline.Discipline("3", "Lc", "B", "C")
+
+        catalogue.addStudent(student)
+        catalogue.addDiscipline(discipline1)
+        catalogue.addDiscipline(discipline2)
+        catalogue.addDiscipline(discipline3)
+
+        try:
+            catalogue.selectOptionalsByID("1", "2")
+            assert self.equalDisciplines(student.getOptionals(), [discipline2])
+        except Exception:
+            assert False
+
+        try:
+            catalogue.selectOptionalsByID("1", "asfieo")
+            assert False
+        except validation.errors.NonExistentIDError as err:
+            assert str(err)=="Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n"
+
+
+    def testRemoveOptionalsByID(self):
+        validator = validation.validators.DisciplineValidator()
+        catalogue = data.repositories.catalogue.Catalogue()
+
+        student = domain.student.Student("1", "Raul", "Pele")
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        discipline2 = domain.discipline.Discipline("2", "Asc", "B", "C")
+        discipline3 = domain.discipline.Discipline("3", "Lc", "B", "C")
+        catalogue.addStudent(student)
+        catalogue.addDiscipline(discipline1)
+        catalogue.addDiscipline(discipline2)
+        catalogue.addDiscipline(discipline3)
+        catalogue.selectOptionalsByID("1", "2")
+        catalogue.selectOptionalsByID("1", "3")
+
+        try:
+            catalogue.removeOptionalsByID("1", "123")
+            assert False
+        except validation.errors.NonExistentIDError as err:
+            assert str(err) == "Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n"
+
+        try:
+            catalogue.removeOptionalsByID("1", "2")
+            assert True
+        except Exception:
+            assert False
 
 
 
@@ -444,3 +555,10 @@ class Tests:
         self.testFindDisciplineByID()
         #self.testAssignGradeSrv()
         self.testRemoveStudentByName()
+        self.testRemoveDisciplineByName()
+        self.testModifyStudentID()
+        self.testModifyStudentName()
+        self.testModifyStudentIDSrv()
+        self.testModifyStudentNameSrv()
+        self.testSelectOptionalsByID()
+        self.testRemoveOptionalsByID()

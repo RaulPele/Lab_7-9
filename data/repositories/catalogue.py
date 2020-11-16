@@ -208,17 +208,52 @@ class Catalogue():
         Adauga disciplina optionala IDDiscipline studentului IDStudent
         :param IDStudent:
         :param IDDiscipline:
+        raise NonExistentIDError daca studentul sau disciplina nu se regasesc in catalog
         :return:
         """
         try:
             student = self.findStudentByID(IDStudent)
             discipline = self.findDisciplineByID(IDDiscipline)
+            if not discipline.getIsOptional():
+                raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
         else:
             student.addDiscipline(discipline)
 
+    def removeOptionalsByID(self, IDStudent, IDDiscipline):
+        """
+        Sterge disciplina optionala IDDiscipline din lista de discipline a studentului IDSTudent
+        :param IDStudent: id-ul studentului -string
+        :param IDDiscipline: id-ul disciplinei -string
+        raise NonExistentIDError daca studentul sau disciplina nu se regasesc in catalog
+        """
+        try:
+            student = self.findStudentByID(IDStudent)
+            discipline = self.findDisciplineByID(IDDiscipline)
+            if not discipline.getIsOptional():
+                raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+        else:
+            student.removeDiscipline(discipline)
 
+    def modifyStudentName(self, student, newFirstName, newLastName):
+        """
+        Modifica numele studentului student in newFirstName si newLastName
+        :param student: obiect Student()
+        :param newFirstName: noul prenume - string
+        :param newLastName: noul nume - string
+        """
+        student.setName(newFirstName, newLastName)
+
+    def modifyStudentID(self, student, newID):
+        """
+        Modifica id-ul studentului student in newID
+        :param student: obiect Student()
+        :param newID: noul id - string
+        """
+        student.setID(newID)
 
     def getStudents(self):
         return self.__students

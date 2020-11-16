@@ -31,12 +31,16 @@ class Student:
     def getDisciplines(self):
         return self.__disciplines
 
+    def getOptionals(self):
+        return [d for d in self.__disciplines if d.getIsOptional()]
+
     def setID(self, ID):
         self.__IDStudent = ID
 
     def setName(self, firstName, lastName):
         self.__firstName = firstName
         self.__lastName = lastName
+        self.formatName()
 
     def setFirstName(self, firstName):
         self.__firstName = firstName

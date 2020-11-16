@@ -2,6 +2,7 @@ from ui.menu import Menu
 from validation.errors import InvalidStudentError, StudentAlreadyExistsError, InvalidIDError
 from validation.errors import InvalidDisciplineError, DisciplineAlreadyExistsError, NonExistentIDError
 from validation.errors import InvalidGradeError, NonExistentStudentError, NonExistentDisciplineError
+from validation.errors import InvalidNameError
 from utils.colors import  Colors
 
 class Console:
@@ -47,16 +48,26 @@ class Console:
         gradesMenu.addFunction(self.assignGrade)
         gradesMenu.addItem("2. Inapoi...")
 
+        modifyMenu = Menu()
+        modifyMenu.addItem("1. Modifica un student din lista")
+        modifyMenu.addFunction(self.modifyStudent)
+        modifyMenu.addItem("2. Modifica o disciplina din lista")
+        #add function
+        modifyMenu.addItem("3. Inapoi...")
+
+
         mainMenu = Menu()
         mainMenu.addItem("1. Adaugare")
         mainMenu.addItem("2. Afisare")
         mainMenu.addItem("3. Stergere")
-        mainMenu.addItem("4. Cautare")
-        mainMenu.addItem("5. Note")
-        mainMenu.addItem("6. Iesire")
+        mainMenu.addItem("4. Modificare")
+        mainMenu.addItem("5. Cautare")
+        mainMenu.addItem("6. Note")
+        mainMenu.addItem("7. Iesire")
         mainMenu.addSubMenu(addMenu)
         mainMenu.addSubMenu(printMenu)
         mainMenu.addSubMenu(removeMenu)
+        mainMenu.addSubMenu(modifyMenu)
         mainMenu.addSubMenu(searchMenu)
         mainMenu.addSubMenu(gradesMenu)
         Menu.initializeStack(mainMenu)
@@ -259,6 +270,111 @@ class Console:
             print(student)
             input("Apsati Enter pentru a continua...")
 
+    def __modifyID(self, IDStudent):
+        newID = input("Dati ID-ul nou al studentului: ").strip()
+
+        try:
+            self.__studentSrv.modifyID(IDStudent, newID)
+        except InvalidIDError as err:
+            print(str(err))
+
+    def __modifyName(self, IDStudent):
+        firstName = input("Dati prenumele nou al studentului:\n").strip()
+        lastName = input("Dati numele nou al studentului:\n").strip()
+        try:
+            self.__studentSrv.modifyName(IDStudent, firstName, lastName)
+        except InvalidNameError as err:
+            print(str(err))
+
+    def __modifyOptionals(self, IDStudent):
+        operation = input("Doriti sa adaugati(1) sau sa stergeti(2) discipline optionale?\n")
+        functions = {"1": self.__addOptionals, "2": self.__removeOptionals}
+        try:
+            functions[operation](IDStudent)
+        except KeyError:
+            print("Optiune invalida!\n")
+
+    def __addOptionals(self, IDStudent):
+        optionals = self.__disciplineSrv.getOptionals()
+        studentOptionals = self.__studentSrv.getOptionals(IDStudent)
+        availableOptionals = [d for d in optionals if d not in studentOptionals]
+
+        if len(availableOptionals) == 0:
+            print(Colors.RED + "Nu exista alte optionale disponibile.\n" + Colors.RESET)
+            return
+
+        while len(availableOptionals) != 0:
+            for d in availableOptionals:
+                print(d)
+
+            prompt = input("Dati id-ul disciplinei optionale sau tastati exit: \n").strip()
+            if prompt == "exit":
+                return
+            try:
+                self.__disciplineSrv.selectOptionals(IDStudent, prompt)
+            except InvalidIDError as err:
+                print(str(err))
+            except NonExistentIDError as err:
+                print(str(err))
+            else:
+                availableOptionals = [d for d in availableOptionals if d.getID() != prompt]
+
+    def __removeOptionals(self, IDStudent):
+        studentOptionals = self.__studentSrv.getOptionals(IDStudent)
+
+        if len(studentOptionals) == 0 :
+            print(Colors.RED + "Studentul nu are selectate optionale.\n" + Colors.RESET)
+            return
+
+        while len(studentOptionals) != 0:
+            for d in studentOptionals:
+                print(d)
+
+            prompt = input("Dati id-ul disciplinei optionale sau tastati exit: \n").strip()
+            if prompt == "exit":
+                return
+            try:
+                self.__disciplineSrv.removeOptionals(IDStudent, prompt)
+            except InvalidIDError as err:
+                print(str(err))
+            except NonExistentIDError as err:
+                print(str(err))
+            else:
+                studentOptionals = [d for d in studentOptionals if d.getID() != prompt]
+
+    def modifyStudent(self):
+        """
+        Ia datele necesare pentru modificarea unui student si apeleaza serviciul corespunzator
+        """
+        if len(self.__studentSrv.getStudents()) == 0:
+            print(Colors.GREEN + "Lista este goala.\n" + Colors.RESET)
+            return
+
+        self.printStudents()
+
+        IDStudent = input("Dati ID-ul studentului care se va modifica:\n").strip()
+
+        try:
+            self.__studentSrv.findStudent(IDStudent)
+        except InvalidIDError as err:
+            print(str(err))
+            return
+        except NonExistentIDError as err:
+            print(str(err))
+            return
+
+        property = input("Selectati campul care se va modifica (ID, nume, discipline): \n").strip().lower()
+        modFunctions = {"id": self.__modifyID, "nume": self.__modifyName, "discipline": self.__modifyOptionals}
+
+        try:
+            modFunctions[property](IDStudent)
+        except KeyError:
+            print(Colors.RED + "Campul selectat nu exista!\n" + Colors.RESET)
+        else:
+            print(Colors.GREEN + "Studentul a fost modificat cu succes!\n" + Colors.RESET)
+            input("Apasati enter pentru a continua...\n")
+
+
     def assignGrade(self):
         """
         Ia datele necesare pentru a atribui o nota unui student la o materie
@@ -300,7 +416,6 @@ class Console:
             else:
                 print(student)
                 input("Apasati Enter pentru a continua...")
-
 
 
     def run(self):

@@ -35,6 +35,13 @@ class StudentService:
         "returneaza lista studentilor din catalog"
         return self.__catalogue.getStudents()
 
+    def getOptionals(self, IDStudent):
+        """Returneaza lista de optionale selecate de studentul IDStudent
+        :param IDStudent: id-ul studentului - string
+        :return optionals: lista de optionale"""
+        student = self.__catalogue.findStudentByID(IDStudent)
+        return student.getOptionals()
+
     def removeStudent(self, identifier):
         """
         Sterge studentul identificat dupa identifier din catalog
@@ -80,4 +87,36 @@ class StudentService:
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
         return student
+
+    def modifyID(self, oldID, newID):
+        """
+        Modifica id-ul unui student in newID
+        :param oldID: id-ul curent al studentului - string
+        :param newID: noul id al studentului - string
+        raise InvalidIDError - daca newID este invalid
+        """
+        try:
+            self.__validator.validateID(newID)
+        except InvalidIDError:
+            raise InvalidIDError("ID-ul nou este invalid!\n")
+
+        student = self.__catalogue.findStudentByID(oldID)
+        self.__catalogue.modifyStudentID(student, newID)
+
+
+    def modifyName(self, IDStudent, newFirstName, newLastName):
+        """
+        Modifica numele studentului IDStudent in newFirstName si newLastName
+        :param IDStudent: id-ul studentului - string
+        :param newFirstName: noul prenume al studentului - string
+        :param newLastName: noul nume al studentului - string
+        raise InvalidNameError daca newFirstName sau newLastName sunt invalide
+        """
+        try:
+            self.__validator.validateName(newFirstName, newLastName)
+        except InvalidNameError as err:
+            raise InvalidNameError(str(err))
+
+        student = self.__catalogue.findStudentByID(IDStudent)
+        self.__catalogue.modifyStudentName(student, newFirstName, newLastName)
 

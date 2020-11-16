@@ -73,3 +73,21 @@ class DisciplineService:
             self.__catalogue.selectOptionalsByID(IDStudent, identifier)
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
+
+    def removeOptionals(self, IDStudent, identifier):
+        """
+        Sterge disciplina optionala identificata cu identifier pentru studentul IDStudent
+        :param IDStudent: id-ul studentului - string
+        :param identifier: identificatorul disciplinei - string
+        raise NonExistentIDError daca studentul sau disciplina cu id-ul dat nu exista
+        raise InvalidIDError- daca id-ul disciplinei este invalid
+        """
+        try:
+            self.__validator.validateID(identifier)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
+
+        try:
+            self.__catalogue.removeOptionalsByID(IDStudent, identifier)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
