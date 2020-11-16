@@ -52,7 +52,7 @@ class Console:
         modifyMenu.addItem("1. Modifica un student din lista")
         modifyMenu.addFunction(self.modifyStudent)
         modifyMenu.addItem("2. Modifica o disciplina din lista")
-        #add function
+        modifyMenu.addFunction(self.modifyDiscipline)
         modifyMenu.addItem("3. Inapoi...")
 
 
@@ -270,7 +270,7 @@ class Console:
             print(student)
             input("Apsati Enter pentru a continua...")
 
-    def __modifyID(self, IDStudent):
+    def __modifyStudentID(self, IDStudent):
         newID = input("Dati ID-ul nou al studentului: ").strip()
 
         try:
@@ -278,7 +278,7 @@ class Console:
         except InvalidIDError as err:
             print(str(err))
 
-    def __modifyName(self, IDStudent):
+    def __modifyStudentName(self, IDStudent):
         firstName = input("Dati prenumele nou al studentului:\n").strip()
         lastName = input("Dati numele nou al studentului:\n").strip()
         try:
@@ -286,7 +286,7 @@ class Console:
         except InvalidNameError as err:
             print(str(err))
 
-    def __modifyOptionals(self, IDStudent):
+    def __modifyStudentOptionals(self, IDStudent):
         operation = input("Doriti sa adaugati(1) sau sa stergeti(2) discipline optionale?\n")
         functions = {"1": self.__addOptionals, "2": self.__removeOptionals}
         try:
@@ -364,7 +364,7 @@ class Console:
             return
 
         property = input("Selectati campul care se va modifica (ID, nume, discipline): \n").strip().lower()
-        modFunctions = {"id": self.__modifyID, "nume": self.__modifyName, "discipline": self.__modifyOptionals}
+        modFunctions = {"id": self.__modifyStudentID, "nume": self.__modifyStudentName, "discipline": self.__modifyStudentOptionals}
 
         try:
             modFunctions[property](IDStudent)
@@ -373,6 +373,72 @@ class Console:
         else:
             print(Colors.GREEN + "Studentul a fost modificat cu succes!\n" + Colors.RESET)
             input("Apasati enter pentru a continua...\n")
+
+    def modifyDiscID(self, IDDiscipline):
+        newID = input("Introduceti noul id al disciplinei: ").strip()
+        try:
+            self.__disciplineSrv.modifyID(IDDiscipline, newID)
+        except InvalidIDError as err:
+            print(str(err))
+        except NonExistentIDError as err:
+            print(str(err))
+
+
+    def modifyDiscName(self, IDDiscipline):
+        newName = input("Introduceti noul nume al disciplinei: ").strip()
+        try:
+            self.__disciplineSrv.modifyDiscName(IDDiscipline, newName)
+        except InvalidNameError as err:
+            print(str(err))
+
+    def modifyDiscTeacher(self, IDDiscipline):
+        newFirstName = input("Introduceti noul prenume al profesorului: ").strip()
+        newLastName = input("Introduceti noul nume al profesorului: ").strip()
+
+        try:
+            self.__disciplineSrv.modifyTeacher(IDDiscipline, newFirstName, newLastName)
+        except InvalidNameError as err:
+            print(str(err))
+
+    def modifyDiscOptional(self, IDDiscipline):
+        newOptional = input("Este disciplina optionala? (Da/Nu)").strip().lower()
+        options = {"da":True, "nu": False}
+        if newOptional not in options.keys():
+            print(Colors.RED + "Optiune invalida!\n" + Colors.RESET)
+            return
+        self.__disciplineSrv.modifyOptional(IDDiscipline, options[newOptional])
+
+    def modifyDiscipline(self):
+        """
+        Ia datele necesare pentru a modifica o disciplina si apeleaza serviciul corespunzator
+        """
+        if len(self.__disciplineSrv.getDisciplines()) == 0:
+            print(Colors.GREEN + "Lista este goala.\n" + Colors.RESET)
+            return
+        self.printDisciplines()
+
+        IDDiscipline = input("Dati id-ul disciplinei care se va modifica: ").strip()
+        try:
+            self.__disciplineSrv.findDiscipline(IDDiscipline)
+        except InvalidIDError as err:
+            print(str(err))
+            return
+        except NonExistentIDError as err:
+            print(str(err))
+            return
+
+        property = input("Selectati campul care se va modifica (ID, nume, profesor, optional): \n").strip().lower()
+        modFunctions = {"id": self.modifyDiscID, "nume": self.modifyDiscName, "profesor": self.modifyDiscTeacher,
+                        "optional": self.modifyDiscOptional}
+
+        try:
+            modFunctions[property](IDDiscipline)
+
+        except KeyError:
+            print(Colors.RED + "Campul selectat nu exista!\n" + Colors.RESET)
+        else:
+            print(Colors.GREEN + "Disciplina a fost modificata cu succes!\n" + Colors.RESET)
+            input("Apasati enter pentru a continua...")
 
 
     def assignGrade(self):

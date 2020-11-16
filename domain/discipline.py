@@ -32,15 +32,18 @@ class Discipline:
 
     def setName(self, name):
         self.__name = name
+        self.__name = self.formatName()
 
     def setTeacherFirst(self, firstName):
         self.__teacherFirst = firstName
+        self.__teacherFirst = self.formatTeacherFirst()
 
     def setTeacherLast(self, lastName):
-        self.__teacherLast = lastName
+        self.__teacherLast = lastName.capitalize()
 
     def setOptional(self, isOptional):
         self.__isOptional = isOptional
+        self.formatOptional()
 
     def __eq__(self, other):
         "Defineste operatia de egalitate dintre doua obiecte de tip discipline"
@@ -62,32 +65,39 @@ class Discipline:
 
         return output
 
-
-    def formatFields(self):
-        "Formateaza campurile disciplinei capitalizand numele si transformand isOptional in boolean"
-        formatedName=""
+    def formatName(self):
+        formatedName = ""
         for n in self.__name.split(" "):
             n = n.capitalize()
             formatedName += n
             formatedName += " "
+        return formatedName.strip()
 
-        self.__name = formatedName.strip()
-
-        formatedTFirstName=""
+    def formatTeacherFirst(self):
+        formatedTFirstName = ""
         for name in self.__teacherFirst.split("-"):
             name = name.capitalize()
-            formatedTFirstName +=name
+            formatedTFirstName += name
             formatedTFirstName += "-"
+        return formatedTFirstName[0:len(formatedTFirstName)-1]
 
-        self.__teacherFirst = formatedTFirstName[0:len(formatedTFirstName)-1]
-
-        self.__teacherLast = self.__teacherLast.capitalize()
-
+    def formatOptional(self):
         if isinstance(self.__isOptional, str):
             if self.__isOptional.lower() == "da":
                 self.__isOptional = True
             elif self.__isOptional.lower() =="nu":
                 self.__isOptional = False
+
+    def formatFields(self):
+        "Formateaza campurile disciplinei capitalizand numele si transformand isOptional in boolean"
+
+        self.__name = self.formatName()
+
+        self.__teacherFirst = self.formatTeacherFirst()
+
+        self.__teacherLast = self.__teacherLast.capitalize()
+
+        self.formatOptional()
 
     def makeCopy(self):
         copy = Discipline(self.getID(), self.getName(), self.getTeacherFirst(), self.getTeacherFirst(), self.getIsOptional())

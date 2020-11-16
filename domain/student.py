@@ -79,6 +79,8 @@ class Student:
             self.__disciplines.append(discipline)
             self.addGrade(discipline, Grade())
             return
+        if discipline in self.__disciplines:
+            return
 
         oldSize = len(self.__disciplines)
         for i in range(0, len(self.__disciplines)):

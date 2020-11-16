@@ -538,7 +538,105 @@ class Tests:
         except Exception:
             assert False
 
+    def testModifyDiscID(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        catalogue.addDiscipline(discipline1)
 
+        catalogue.modifyDiscID(discipline1, "2")
+        assert discipline1.getID() == "2"
+
+    def testModifyDiscName(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        catalogue.addDiscipline(discipline1)
+
+        catalogue.modifyDiscName(discipline1, "arhitectura sistemelor de calcul")
+        assert discipline1.getName() == "Arhitectura Sistemelor De Calcul"
+
+    def testModifyTeacher(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        catalogue.addDiscipline(discipline1)
+
+        catalogue.modifyDiscTeacher(discipline1, "Alexandru", "Vancea")
+        assert discipline1.getTeacher() == "Alexandru Vancea"
+
+    def testModifyOptional(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        catalogue.addDiscipline(discipline1)
+
+        catalogue.modifyDiscOptional(discipline1, True)
+        assert discipline1.getIsOptional() == True
+
+    def testModifyDiscIDSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        catalogue.addDiscipline(discipline1)
+        validator = validation.validators.DisciplineValidator()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+
+        try:
+            disciplineSrv.modifyID("1", "123e")
+            assert False
+        except validation.errors.InvalidIDError as err:
+            assert str(err) == "ID-ul disciplinei este invalid!\n"
+
+        try:
+            disciplineSrv.modifyID("1", "123")
+            assert True
+        except Exception:
+            assert False
+
+
+    def testModifyDiscNameSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        catalogue.addDiscipline(discipline1)
+        validator = validation.validators.DisciplineValidator()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+
+        try:
+            disciplineSrv.modifyDiscName("1", "arhitectura sistemelor de calcul")
+            assert True
+        except Exception:
+            assert False
+
+        try:
+            disciplineSrv.modifyDiscName("1", "123")
+            assert False
+        except validation.errors.InvalidNameError as err:
+            assert str(err) == "Numele disciplinei este invalid!\n"
+
+    def testModifyTeacherSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        catalogue.addDiscipline(discipline1)
+        validator = validation.validators.DisciplineValidator()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+
+        try:
+            disciplineSrv.modifyTeacher("1", "Alexandru", "irweir123123")
+            assert False
+        except validation.errors.InvalidNameError as err:
+            assert str(err) == "Numele profesorului este invalid!\n"
+
+        try:
+            disciplineSrv.modifyTeacher("1", "Alexandru", "Vancea")
+            assert True
+        except Exception:
+            assert False
+
+    def testModifyDiscOptionalSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
+        catalogue.addDiscipline(discipline1)
+        validator = validation.validators.DisciplineValidator()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+
+        disciplineSrv.modifyOptional("1", True)
+        assert discipline1.getIsOptional() == True
 
     def runTests(self):
         self.testAddStudent()
@@ -562,3 +660,12 @@ class Tests:
         self.testModifyStudentNameSrv()
         self.testSelectOptionalsByID()
         self.testRemoveOptionalsByID()
+        self.testModifyDiscID()
+        self.testModifyDiscName()
+        self.testModifyTeacher()
+        self.testModifyOptional()
+        self.testModifyDiscIDSrv()
+        self.testModifyDiscNameSrv()
+        self.testModifyTeacherSrv()
+        self.testModifyDiscOptionalSrv()
+

@@ -255,6 +255,48 @@ class Catalogue():
         """
         student.setID(newID)
 
+    def modifyDiscID(self, discipline, newID):
+        """
+        Modifica id-ul disciplinei discipline in newID
+        :param discipline: Discipline()
+        :param newID: id-ul nou - string
+        """
+        discipline.setID(newID)
+
+    def modifyDiscName(self, discipline, newName):
+        """
+        Modifica numele disciplinei discipline in newName
+        :param discipline: obiect Discipline()
+        :param newName: noul nume - string
+        """
+        discipline.setName(newName)
+
+    def modifyDiscTeacher(self, discipline, newFirstName, newLastName):
+        """
+        Modifica numele profesorului disciplinei discipline in newFirstName + newLastName
+        :param discipline: disciplina Discipline()
+        :param newFirstName: noul prenume - string
+        :param newLastName: noul nume - string
+        """
+        discipline.setTeacherFirst(newFirstName)
+        discipline.setTeacherLast(newLastName)
+
+    def modifyDiscOptional(self, discipline, isOptional):
+        """
+        Modifica caracterul disciplinei discipline
+        :param discipline: Discipline()
+        :param isOptional: caracterul disciplinei - bool
+        """
+        oldOptional = discipline.getIsOptional()
+        discipline.setOptional(isOptional)
+
+        if oldOptional == False and isOptional == True:
+            #was not optional before but now it is
+            self.removeDisciplineForStudents(discipline)
+        elif oldOptional == True and isOptional == False:
+            #was optional before but now it's not
+            self.addDisciplineToStudents(discipline)
+
     def getStudents(self):
         return self.__students
 

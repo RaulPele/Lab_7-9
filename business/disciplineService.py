@@ -91,3 +91,75 @@ class DisciplineService:
             self.__catalogue.removeOptionalsByID(IDStudent, identifier)
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
+
+    def findDiscipline(self, identifier):
+        """Returneaza disciplina cu identificatorul identifier
+         identifier - string
+         return discipline - disciplina corespunzatoare Discipline()
+        """
+        try:
+            self.__validator.validateID(identifier)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
+
+        try:
+            discipline = self.__catalogue.findDisciplineByID(identifier)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+
+        return discipline
+
+    def modifyID(self, oldID, newID):
+        """
+        Modifica id-ul disciplinei din oldID in newID
+        :param oldID: id-ul disciplinei - string
+        :param newID: noul id al disciplinei - string
+        raise InvalidIDError daca newID este invalid
+        """
+        try:
+            self.__validator.validateID(newID)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
+
+        discipline = self.__catalogue.findDisciplineByID(oldID)
+        self.__catalogue.modifyDiscID(discipline, newID)
+
+    def modifyDiscName(self, IDDiscipline, newName):
+        """
+        Modifica numele disciplinei in newName
+        :param IDDiscipline: id-ul disciplinei - string
+        :param newName: noul nume al disciplinei - string
+        raise InvalidNameError - daca newName este invalid
+        """
+        try:
+            self.__validator.validateDisciplineName(newName)
+        except InvalidNameError as err:
+            raise InvalidNameError(str(err))
+
+        discipline = self.__catalogue.findDisciplineByID(IDDiscipline)
+        self.__catalogue.modifyDiscName(discipline, newName)
+
+
+    def modifyTeacher(self, IDDiscipline, newFirstName, newLastName):
+        """
+        Modifica numele profesorului de la disciplina respectiva in newFirstName si newLastName
+        :param IDDiscipline: id-ul disciplinei - string
+        :param newFirstName: noul prenume - string
+        :param newLastName: noul nume - string
+        """
+        try:
+            self.__validator.validateTeacher(newFirstName, newLastName)
+        except InvalidNameError as err:
+            raise InvalidNameError(str(err))
+
+        discipline = self.__catalogue.findDisciplineByID(IDDiscipline)
+        self.__catalogue.modifyDiscTeacher(discipline, newFirstName, newLastName)
+
+    def modifyOptional(self, IDDiscipline, isOptional):
+        """
+        Modifica caracterul disciplinei IDDiscipline
+        :param IDDiscipline: id-ul disciplinei - string
+        :param isOptional: caracterul disciplinei - boolean
+        """
+        discipline = self.__catalogue.findDisciplineByID(IDDiscipline)
+        self.__catalogue.modifyDiscOptional(discipline, isOptional)
