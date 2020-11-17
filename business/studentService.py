@@ -2,6 +2,8 @@ from domain.student import Student
 from validation.errors import InvalidStudentError, StudentAlreadyExistsError
 from validation.errors import InvalidIDError, NonExistentIDError
 from validation.errors import InvalidNameError, NonExistentStudentError
+import random
+import string
 
 class StudentService:
     """
@@ -149,4 +151,41 @@ class StudentService:
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
         self.__catalogue.modifyStudentName(student, newFirstName, newLastName)
+
+    def __generateRandomID(self):
+        id = ""
+        for i in range(0, 5):
+            id += random.choice(string.digits)
+        return id
+
+    def __generateRandomName(self):
+        name = ""
+        for i in range(0, 4):
+            name += random.choice(string.ascii_lowercase)
+        return name
+
+    def __isUnique(self, id):
+        try:
+            self.__catalogue.findStudentByID(id)
+        except NonExistentIDError:
+            return True
+        return False
+
+    def generateRandomStudents(self, numberOfStudents):
+        try:
+            self.__validator.validateNumber(numberOfStudents)
+        except ValueError as err:
+            raise ValueError(str(err))
+
+        for i in range(0, numberOfStudents):
+            id = self.__generateRandomID()
+            while not self.__isUnique(id):
+                id = self.__generateRandomID()
+
+            firstName = self.__generateRandomName()
+            lastName = self.__generateRandomName()
+
+            student = Student(id, firstName, lastName)
+            self.__catalogue.addStudent(student)
+
 

@@ -55,6 +55,11 @@ class Console:
         modifyMenu.addFunction(self.modifyDiscipline)
         modifyMenu.addItem("3. Inapoi...")
 
+        randomMenu = Menu()
+        randomMenu.addItem("1. Genereaza studenti aleator")
+        randomMenu.addFunction(self.generateRandomStudents)
+        randomMenu.addItem("2. Inapoi...")
+
 
         mainMenu = Menu()
         mainMenu.addItem("1. Adaugare")
@@ -63,13 +68,15 @@ class Console:
         mainMenu.addItem("4. Modificare")
         mainMenu.addItem("5. Cautare")
         mainMenu.addItem("6. Note")
-        mainMenu.addItem("7. Iesire")
+        mainMenu.addItem("7. Random")
+        mainMenu.addItem("8. Iesire")
         mainMenu.addSubMenu(addMenu)
         mainMenu.addSubMenu(printMenu)
         mainMenu.addSubMenu(removeMenu)
         mainMenu.addSubMenu(modifyMenu)
         mainMenu.addSubMenu(searchMenu)
         mainMenu.addSubMenu(gradesMenu)
+        mainMenu.addSubMenu(randomMenu)
         Menu.initializeStack(mainMenu)
 
     def __displayMenu(self):
@@ -259,7 +266,7 @@ class Console:
             return
         self.printStudents()
 
-        identifier = input("Dati ID-ul sau numele studentului pentru care se va face afisarea: \n")
+        identifier = input("Dati ID-ul sau numele studentului (prenume nume) pentru care se va face afisarea: \n")
         try:
             student = self.__studentSrv.findStudent(identifier)
         except InvalidStudentError as err:
@@ -492,6 +499,26 @@ class Console:
             else:
                 print(student)
                 input("Apasati Enter pentru a continua...")
+
+
+    def generateRandomStudents(self):
+        numberOfStudStr = input("Dati numarul de studenti generati aleator: ")
+        try:
+            numberOfStud = int(numberOfStudStr)
+        except ValueError:
+            print("Numarul trebuie sa fie intreg!\n")
+            return
+
+        if numberOfStud != float(numberOfStudStr):
+            print("Numarul trebuie sa fie intreg!\n")
+            return
+
+        try:
+            self.__studentSrv.generateRandomStudents(numberOfStud)
+        except ValueError as err:
+            print(str(err))
+        else:
+            self.printStudents()
 
 
     def run(self):

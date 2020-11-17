@@ -58,6 +58,11 @@ class StudentValidator:
         if len(errors) != 0:
             raise InvalidNameError(errors)
 
+    def validateNumber(self, x):
+        if x<0:
+            raise ValueError("Numarul trebuie sa fie intreg pozitiv!\n")
+
+
 
 class DisciplineValidator:
 
