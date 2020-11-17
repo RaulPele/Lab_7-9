@@ -99,6 +99,17 @@ class StudentService:
                 raise NonExistentStudentError(str(err))
         return students
 
+    def findStudentByID(self, idStudent):
+        try:
+            self.__validator.validateID(idStudent)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
+
+        try:
+            student = self.__catalogue.findStudentByID(idStudent)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+        return student
 
     def modifyID(self, oldID, newID):
         """
@@ -112,7 +123,11 @@ class StudentService:
         except InvalidIDError:
             raise InvalidIDError("ID-ul nou este invalid!\n")
 
-        student = self.__catalogue.findStudentByID(oldID)
+        try:
+            student = self.__catalogue.findStudentByID(oldID)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+
         self.__catalogue.modifyStudentID(student, newID)
 
 
@@ -129,6 +144,9 @@ class StudentService:
         except InvalidNameError as err:
             raise InvalidNameError(str(err))
 
-        student = self.__catalogue.findStudentByID(IDStudent)
+        try:
+            student = self.__catalogue.findStudentByID(IDStudent)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
         self.__catalogue.modifyStudentName(student, newFirstName, newLastName)
 

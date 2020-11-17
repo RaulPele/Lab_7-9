@@ -282,6 +282,8 @@ class Console:
             self.__studentSrv.modifyID(IDStudent, newID)
         except InvalidIDError as err:
             print(str(err))
+        except NonExistentIDError as err:
+            print(str(err))
 
     def __modifyStudentName(self, IDStudent):
         firstName = input("Dati prenumele nou al studentului:\n").strip()
@@ -289,6 +291,8 @@ class Console:
         try:
             self.__studentSrv.modifyName(IDStudent, firstName, lastName)
         except InvalidNameError as err:
+            print(str(err))
+        except NonExistentIDError as err:
             print(str(err))
 
     def __modifyStudentOptionals(self, IDStudent):
@@ -360,7 +364,7 @@ class Console:
         IDStudent = input("Dati ID-ul studentului care se va modifica:\n").strip()
 
         try:
-            self.__studentSrv.findStudent(IDStudent)
+            self.__studentSrv.findStudentByID(IDStudent)
         except InvalidIDError as err:
             print(str(err))
             return
@@ -461,13 +465,14 @@ class Console:
 
         identifier = input("Dati ID-ul studentului care primeste nota: \n")
         try:
-            student = self.__studentSrv.findStudent(identifier)
+            student = self.__studentSrv.findStudentByID(identifier)
         except InvalidIDError as err:
             print(str(err))
         except NonExistentIDError as err:
             print(str(err))
         else:
             print(student)
+
             disciplineIdentifier = input("Dati ID-ul disciplinei la care va primi studentul nota: \n")
             grade = input("Dati nota: \n")
             try:
