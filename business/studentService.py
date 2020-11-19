@@ -81,38 +81,44 @@ class StudentService:
         """
         try:
             students = self.findStudentByID(identifier)
-        except (InvalidStudentError, NonExistentStudentError):
+        except InvalidIDError:
+            #id-ul este invalid
             try:
                 students = self.findStudentByName(identifier)
-            except (NonExistentStudentError, InvalidStudentError):
+            except InvalidNameError:
+                #id-ul si numele este invalid
                 raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
+            except NonExistentStudentError as err:
+                #numele este valid dar nu exista, id-ul este invalid
+                raise NonExistentStudentError(str(err))
             else:
                 return students
-            raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
+        except NonExistentIDError as err:
+            raise NonExistentStudentError(str(err))
         else:
             return students
+
+
 
 
     def findStudentByID(self, idStudent):
         try:
             self.__validator.validateID(idStudent)
         except InvalidIDError as err:
-            raise InvalidStudentError(str(err))
+            raise InvalidIDError(str(err))
 
         try:
             student = self.__catalogue.findStudentByID(idStudent)
         except NonExistentIDError as err:
-            raise NonExistentStudentError(str(err))
+            raise NonExistentIDError(str(err))
         return student
 
     def findStudentByName(self, name):
         try:
             names = name.split(" ")
             self.__validator.validateName(names[0], names[1])
-        except InvalidNameError:
-            raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
-        except IndexError:
-            raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
+        except (InvalidNameError, KeyError, IndexError):
+            raise InvalidNameError("Numele sau ID-ul studentului este invalid!\n")
 
         try:
             students = self.__catalogue.findStudentByName(name)
