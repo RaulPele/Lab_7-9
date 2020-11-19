@@ -80,38 +80,47 @@ class StudentService:
         :return: student - studentul corespunzator lui identifier sau lista de studenti
         """
         try:
-            self.__validator.validateID(identifier)
-        except InvalidIDError as err:
+            students = self.findStudentByID(identifier)
+        except (InvalidStudentError, NonExistentStudentError):
             try:
-                names = identifier.split(" ")
-                self.__validator.validateName(names[0], names[1])
-            except InvalidNameError:
+                students = self.findStudentByName(identifier)
+            except (NonExistentStudentError, InvalidStudentError):
                 raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
-            except IndexError:
-                raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
-
-            try:
-                students = self.__catalogue.findStudentByName(identifier)
-            except NonExistentStudentError as err:
-                raise NonExistentStudentError(str(err))
+            else:
+                return students
+            raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
         else:
-            try:
-                students = self.__catalogue.findStudentByID(identifier)
-            except NonExistentIDError as err:
-                raise NonExistentStudentError(str(err))
-        return students
+            return students
+
 
     def findStudentByID(self, idStudent):
         try:
             self.__validator.validateID(idStudent)
         except InvalidIDError as err:
-            raise InvalidIDError(str(err))
+            raise InvalidStudentError(str(err))
 
         try:
             student = self.__catalogue.findStudentByID(idStudent)
         except NonExistentIDError as err:
-            raise NonExistentIDError(str(err))
+            raise NonExistentStudentError(str(err))
         return student
+
+    def findStudentByName(self, name):
+        try:
+            names = name.split(" ")
+            self.__validator.validateName(names[0], names[1])
+        except InvalidNameError:
+            raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
+        except IndexError:
+            raise InvalidStudentError("Numele sau ID-ul studentului este invalid!\n")
+
+        try:
+            students = self.__catalogue.findStudentByName(name)
+        except NonExistentStudentError as err:
+            raise NonExistentStudentError(str(err))
+
+        return students
+
 
     def modifyID(self, oldID, newID):
         """
