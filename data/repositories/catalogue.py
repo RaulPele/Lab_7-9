@@ -7,7 +7,6 @@ class Catalogue():
     def __init__(self):
         self.__students = []
         self.__disciplines = []
-        self.__grades = {}
 
     def __enrollStudent(self, newStudent):
         """
@@ -197,27 +196,6 @@ class Catalogue():
             if discipline.getID() == ID:
                 return discipline
         raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
-
-    def assignGrade(self, grade):
-        """
-        Asociaza o nota studentului studID la disciplina discID
-        :param studID: id student -string
-        :param discID: id disc - string
-        :param grade: nota - obiect Grade()
-        """
-        try:
-            student = self.findStudentByID(grade.getStudentID())
-            discipline = self.findDisciplineByID(grade.getDisciplineID())
-        except NonExistentIDError as err:
-            raise NonExistentIDError(str(err))
-
-        if discipline.getName() not in self.__grades:
-            self.__grades[discipline.getID()] =[]
-        else:
-            self.__grades[discipline.getID()].append(grade)
-
-        student.addGrade(discipline, grade)
-
 
     def selectOptionalsByID(self, IDStudent, IDDiscipline):
         """

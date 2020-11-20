@@ -1,13 +1,11 @@
 from utils.colors import Colors
-from domain.grade import Grade
+
 class Student:
     def __init__(self, IDStudent, firstName, lastName):
         self.__IDStudent = IDStudent
         self.__firstName = firstName
         self.__lastName = lastName
-        self.__genAverage = 0
         self.__disciplines = []
-        self.__grades = {}
         self.formatName()
 
     def getID(self):
@@ -21,12 +19,6 @@ class Student:
 
     def getLastName(self):
         return self.__lastName
-
-    def getAverage(self):
-        return self.__genAverage
-
-    def getGrades(self, discipline):
-        return self.__grades[discipline.getID()]
 
     def getDisciplines(self):
         return self.__disciplines
@@ -56,19 +48,12 @@ class Student:
     def __str__(self):
         output = Colors.RED + "ID: " + Colors.GREEN + self.getID() + '\n' +\
                 Colors.RED + "Nume: " + Colors.GREEN + self.getLastName() + "\n"+\
-                Colors.RED + "Prenume: " + Colors.GREEN + self.getFirstName() + "\n"+\
-                Colors.RED + "Medie generala: " + Colors.GREEN + str(self.getAverage()) + "\n\n"
-        for discipline in self.getDisciplines():
-            output += str(discipline)
-            grades = ""
-            for grade in self.getGrades(discipline):
-                grades += str(grade.getValue()) +", "
-            grades = grades[0:len(grades)-2]
+                Colors.RED + "Prenume: " + Colors.GREEN + self.getFirstName() + "\n"
 
-            output+= Colors.RED +"Note: " + Colors.GREEN + grades + "\n\n"
-        output+=Colors.RESET
+        for discipline in self.__disciplines:
+            output += "\n" + str(discipline)
+        output+="\n" + Colors.RESET
         return output
-
 
     def addDiscipline(self, discipline):
         """
@@ -77,7 +62,6 @@ class Student:
         """
         if len(self.__disciplines) ==0:
             self.__disciplines.append(discipline)
-            self.addGrade(discipline, Grade())
             return
         if discipline in self.__disciplines:
             return
@@ -91,7 +75,6 @@ class Student:
 
         if oldSize == len(self.__disciplines):
             self.__disciplines.append(discipline)
-        self.addGrade(discipline, Grade())
 
     def removeDiscipline(self, discipline):
         """
@@ -103,33 +86,8 @@ class Student:
             for i in range(0, len(self.__disciplines)):
                 if self.__disciplines[i] == discipline:
                     del self.__disciplines[i]
-                    del self.__grades[discipline.getID()]
-                    self.__calculateAverage()
                     return
 
-    def addGrade(self, discipline, grade):
-        """
-        Adauga o nota la disciplina discipline
-        :param discipline: disciplina Discipline()
-        :param grade: nota - Grade()
-        """
-        if discipline.getID() not in self.__grades.keys():
-            self.__grades[discipline.getID()] = []
-        else:
-            self.__grades[discipline.getID()].append(grade)
-            self.__calculateAverage()
-
-    def __calculateAverage(self):
-        sum = 0
-        numOfGrades = 0
-        for list in self.__grades.values():
-            for grade in list:
-                sum +=grade.getValue()
-                numOfGrades +=1
-        if numOfGrades!=0:
-            self.__genAverage = sum/numOfGrades
-        else:
-            self.__genAverage = 0
 
     def makeCopy(self):
         copy = Student(self.getID(), self.getFirstName(), self.getLastName())

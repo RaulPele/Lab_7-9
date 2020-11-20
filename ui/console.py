@@ -489,7 +489,7 @@ class Console:
                 return
 
             try:
-                self.__gradeSrv.assignGrade(identifier, disciplineIdentifier, grade)
+                self.__gradeSrv.addGrade(identifier, disciplineIdentifier, grade)
             except InvalidIDError as err:
                 print(str(err))
             except InvalidGradeError as err:

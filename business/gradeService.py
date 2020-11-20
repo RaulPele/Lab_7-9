@@ -1,16 +1,17 @@
-from validation.errors import NonExistentIDError
+from validation.errors import NonExistentIDError, NonExistentStudentError
 from validation.errors import InvalidGradeError, InvalidIDError
 from domain.grade import Grade
+from data.DTOs import StudentPrintDTO
 
 class GradeService:
-    def __init__(self, catalogue, discValidator, studValidator, gradeValidator):
+    def __init__(self, gradesRepo, catalogue, discValidator, studValidator, gradeValidator):
+        self.__gradesRepo = gradesRepo
         self.__catalogue = catalogue
         self.__discValidator = discValidator
         self.__studValidator = studValidator
         self.__gradeValidator = gradeValidator
 
-    #TODO: refactor
-    def assignGrade(self, studIdentifier, discIdentifier, gradeValue):
+    def addGrade(self, studIdentifier, discIdentifier, gradeValue):
         try:
             self.__gradeValidator.validateGrade(gradeValue)
         except InvalidGradeError as err:
@@ -23,8 +24,18 @@ class GradeService:
             raise InvalidIDError(str(err))
 
         grade = Grade(gradeValue, studIdentifier, discIdentifier)
+        self.__gradesRepo.addGrade(grade)
+
+    def getStudentInfo(self, studentID):
+        try:
+            self.__studValidator.validateID(studentID)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
 
         try:
-            self.__catalogue.assignGrade(grade)
-        except NonExistentIDError as err:
-            raise NonExistentIDError(str(err))
+            student = self.__catalogue.findStudentByID(studentID)
+        except NonExistentStudentError as err:
+            raise NonExistentStudentError(str(err))
+
+
+
