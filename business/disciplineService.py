@@ -5,9 +5,10 @@ from validation.errors import DisciplineAlreadyExistsError, InvalidIDError, NonE
 
 
 class DisciplineService:
-    def __init__(self, catalogue, validator):
+    def __init__(self, catalogue, gradeRepo, validator):
         self.__catalogue = catalogue
         self.__validator = validator
+        self.__gradeRepo = gradeRepo
 
     def addDiscipline(self, IDDiscipline, name, teacherFirst, teacherLast, isOptional):
         """
@@ -44,14 +45,27 @@ class DisciplineService:
                 raise InvalidDisciplineError("Numele sau ID-ul disciplinei este invalid!\n")
 
             try:
+                disciplines = self.__catalogue.findDisciplineByName(identifier)
                 self.__catalogue.removeDisciplineByName(identifier)
+
             except NonExistentDisciplineError as err:
                 raise NonExistentDisciplineError(str(err))
+            else:
+                self.__removeDisciplineGradesByID([d.getID() for d in disciplines])
         else:
             try:
                 self.__catalogue.removeDisciplineByID(identifier)
-            except NonExistentDisciplineError as err:
+            except NonExistentIDError as err:
                 raise NonExistentDisciplineError(str(err))
+            else:
+                self.__removeDisciplineGradesByID([identifier])
+
+    def __removeDisciplineGradesByID(self, discIDs):
+        for id in discIDs:
+            try:
+                self.__gradeRepo.removeDisciplineGradesByID(id)
+            except NonExistentIDError:
+                pass
 
 
     def getDisciplines(self):

@@ -197,6 +197,15 @@ class Catalogue():
                 return discipline
         raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
 
+    def findDisciplineByName(self, name):
+        disciplines = []
+        for d in self.__disciplines:
+            if d.getName().lower() == name.lower():
+                disciplines.append(d)
+        if len(disciplines) == 0:
+            raise NonExistentDisciplineError("Disciplina cu numele dat nu se afla in lista!\n")
+        return disciplines
+
     def selectOptionalsByID(self, IDStudent, IDDiscipline):
         """
         Adauga disciplina optionala IDDiscipline studentului IDStudent

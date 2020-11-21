@@ -1,4 +1,5 @@
 import data.repositories.catalogue
+import data.repositories.GradesRepository
 import domain.student
 import domain.discipline
 import domain.grade
@@ -210,7 +211,8 @@ class Tests:
     def testAddDisciplineSrv(self):
         validator = validation.validators.DisciplineValidator()
         catalogue = data.repositories.catalogue.Catalogue()
-        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue,gradeRepo, validator)
 
         try:
             disciplineSrv.addDiscipline("1", "ASC", "A", "B", "nu")
@@ -271,7 +273,8 @@ class Tests:
     def testRemoveDisciplineSrv(self):
         validator = validation.validators.DisciplineValidator()
         catalogue = data.repositories.catalogue.Catalogue()
-        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+        gradesRepo = data.repositories.GradesRepository.GradesRepository()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue,gradesRepo, validator)
 
         try:
             disciplineSrv.removeDiscipline("aseqw")
@@ -282,7 +285,7 @@ class Tests:
         try:
             disciplineSrv.removeDiscipline("1")
             assert False
-        except validation.errors.NonExistentIDError as err:
+        except validation.errors.NonExistentDisciplineError as err:
             assert str(err) == "Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n"
 
         catalogue.addDiscipline(domain.discipline.Discipline("1", "asc", "a", "b"))
@@ -416,7 +419,8 @@ class Tests:
     def testRemoveDisciplineByName(self):
         validator = validation.validators.DisciplineValidator()
         catalogue = data.repositories.catalogue.Catalogue()
-        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue, gradeRepo, validator)
 
         discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
         discipline2 = domain.discipline.Discipline("2", "Asc", "B", "C")
@@ -588,7 +592,8 @@ class Tests:
         discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
         catalogue.addDiscipline(discipline1)
         validator = validation.validators.DisciplineValidator()
-        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue,gradeRepo, validator)
 
         try:
             disciplineSrv.modifyID("1", "123e")
@@ -608,7 +613,8 @@ class Tests:
         discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
         catalogue.addDiscipline(discipline1)
         validator = validation.validators.DisciplineValidator()
-        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue,gradeRepo, validator)
 
         try:
             disciplineSrv.modifyDiscName("1", "arhitectura sistemelor de calcul")
@@ -627,7 +633,8 @@ class Tests:
         discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
         catalogue.addDiscipline(discipline1)
         validator = validation.validators.DisciplineValidator()
-        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue,gradeRepo, validator)
 
         try:
             disciplineSrv.modifyTeacher("1", "Alexandru", "irweir123123")
@@ -646,7 +653,8 @@ class Tests:
         discipline1 = domain.discipline.Discipline("1", "Asc", "A", "V", "nu")
         catalogue.addDiscipline(discipline1)
         validator = validation.validators.DisciplineValidator()
-        disciplineSrv = business.disciplineService.DisciplineService(catalogue, validator)
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        disciplineSrv = business.disciplineService.DisciplineService(catalogue,gradeRepo, validator)
 
         disciplineSrv.modifyOptional("1", True)
         assert discipline1.getIsOptional() == True

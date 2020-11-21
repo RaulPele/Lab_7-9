@@ -268,7 +268,7 @@ class Console:
 
         identifier = input("Dati ID-ul sau numele studentului (prenume nume) pentru care se va face afisarea: \n")
         try:
-            student = self.__studentSrv.findStudent(identifier)
+            student = self.__gradeSrv.getStudentInfo(identifier)
         except InvalidStudentError as err:
             print(str(err))
         except NonExistentStudentError as err:
@@ -456,7 +456,7 @@ class Console:
             print(Colors.GREEN + "Disciplina a fost modificata cu succes!\n" + Colors.RESET)
             input("Apasati enter pentru a continua...")
 
-
+    #TODO: validate discipline id
     def assignGrade(self):
         """
         Ia datele necesare pentru a atribui o nota unui student la o materie
@@ -472,7 +472,7 @@ class Console:
 
         identifier = input("Dati ID-ul studentului care primeste nota: \n")
         try:
-            student = self.__studentSrv.findStudentByID(identifier)
+            student = self.__gradeSrv.getStudentInfoByID(identifier)
         except InvalidIDError as err:
             print(str(err))
         except NonExistentIDError as err:
@@ -490,14 +490,10 @@ class Console:
 
             try:
                 self.__gradeSrv.addGrade(identifier, disciplineIdentifier, grade)
-            except InvalidIDError as err:
-                print(str(err))
-            except InvalidGradeError as err:
-                print(str(err))
-            except NonExistentIDError as err:
+            except (InvalidIDError, InvalidGradeError, NonExistentIDError)as err:
                 print(str(err))
             else:
-                print(student)
+                print(self.__gradeSrv.getStudentInfoByID(identifier))
                 input("Apasati Enter pentru a continua...")
 
 

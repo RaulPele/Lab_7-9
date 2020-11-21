@@ -50,8 +50,6 @@ class Student:
                 Colors.RED + "Nume: " + Colors.GREEN + self.getLastName() + "\n"+\
                 Colors.RED + "Prenume: " + Colors.GREEN + self.getFirstName() + "\n"
 
-        for discipline in self.__disciplines:
-            output += "\n" + str(discipline)
         output+="\n" + Colors.RESET
         return output
 

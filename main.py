@@ -10,13 +10,14 @@ from tests.tests import Tests
 
 if __name__ == "__main__":
     catalogue = Catalogue()
+    gradesRepo = GradesRepository()
     studentValidator = StudentValidator()
     studentSrv = StudentService(catalogue, studentValidator)
     disciplineValidator = DisciplineValidator()
-    disciplineSrv = DisciplineService(catalogue, disciplineValidator)
+    disciplineSrv = DisciplineService(catalogue, gradesRepo,  disciplineValidator)
     gradeValidator = GradeValidator()
-    gradesRepo = GradesRepository()
-    gradeSrv = GradeService(gradesRepo, disciplineValidator, studentValidator, gradeValidator)
+
+    gradeSrv = GradeService(gradesRepo,catalogue, disciplineValidator, studentValidator, gradeValidator)
 
     console = Console(studentSrv, disciplineSrv, gradeSrv)
     tests = Tests()
