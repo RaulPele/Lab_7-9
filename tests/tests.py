@@ -2,6 +2,7 @@ import data.repositories.catalogue
 import data.repositories.GradesRepository
 import data.DTOs.StudentPrintDTO
 import data.DTOs.StudentGradesDTO
+import data.DTOs.StudentGeneralDTO
 import domain.student
 import domain.discipline
 import domain.grade
@@ -1021,6 +1022,55 @@ class Tests:
         except validation.errors.NonExistentIDError as err:
             assert str(err) == "Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n"
 
+    def testGetTop20PercentSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        studValidator = validation.validators.StudentValidator()
+        discValidator = validation.validators.DisciplineValidator()
+        gradeValidator = validation.validators.GradeValidator()
+
+        gradeSrv = business.gradeService.GradeService(gradeRepo, catalogue, discValidator, studValidator,
+                                                      gradeValidator)
+        discipline = domain.discipline.Discipline("1", "a", "b", "c", "nu")
+        student1 = domain.student.Student("1", "a", "b")
+        student2 = domain.student.Student("2", "c", "d")
+        student3 = domain.student.Student("3", "c", "a")
+        student4 = domain.student.Student("4", "d", "a")
+        student5 = domain.student.Student("5", "a", "c")
+        catalogue.addDiscipline(discipline)
+        grade1 = domain.grade.Grade(3, "1", "1")
+        grade2 = domain.grade.Grade(2, "1", "1")
+        grade3 = domain.grade.Grade(10, "2", "1")
+        grade4 = domain.grade.Grade(5, "3", "1")
+        grade5 = domain.grade.Grade(4, "5", "1")
+
+        gradeRepo.addGrade(grade1)
+        gradeRepo.addGrade(grade2)
+        gradeRepo.addGrade(grade3)
+        gradeRepo.addGrade(grade4)
+        gradeRepo.addGrade(grade5)
+        catalogue.addStudent(student1)
+        catalogue.addStudent(student2)
+        catalogue.addStudent(student3)
+        catalogue.addStudent(student4)
+        catalogue.addStudent(student5)
+
+        student1DTO = data.DTOs.StudentGeneralDTO.StudentGeneralDTO(student2, 10)
+
+        try:
+            students = gradeSrv.getTop20Percent()
+            assert students == [student1DTO]
+        except Exception:
+            assert False
+
+        catalogue.removeStudentByID("4")
+
+        try:
+            students = gradeSrv.getTop20Percent()
+            assert False
+        except validation.errors.NonExistentStudentError as err:
+            assert str(err) == "Nu exista suficienti studenti in lista!\n"
+
     def runTests(self):
         self.testAddStudent()
         self.testAddDiscipline()
@@ -1061,4 +1111,5 @@ class Tests:
         self.testGetDisciplineGrades()
         self.testGetStudentsFromDisciplineSrv()
         self.testGetStudentsFromDisciplineSortedByAvgSrv()
+        self.testGetTop20PercentSrv()
 

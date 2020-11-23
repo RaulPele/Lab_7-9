@@ -67,7 +67,9 @@ class Console:
         statisticsMenu.addFunction(self.getStudentsFromDiscipline)
         statisticsMenu.addItem("2. Afiseaza toti studentii si notele lor de la o materie ordonati dupa medie")
         statisticsMenu.addFunction(self.getStudentsFromDisciplineSortedAvg)
-        statisticsMenu.addItem("3. Inapoi...")
+        statisticsMenu.addItem("3. Afiseaza primii 20% din studenti ordonati dupa media generala")
+        statisticsMenu.addFunction(self.getTop20Percent)
+        statisticsMenu.addItem("4. Inapoi...")
 
         mainMenu = Menu()
         mainMenu.addItem("1. Adaugare")
@@ -597,6 +599,26 @@ class Console:
             for student in students:
                 print(student)
             input("Apasati enter pentru a continua...")
+
+    def getTop20Percent(self):
+        """
+        Afiseaza primii 20% studenti ordonati dupa media generala
+        """
+        if len(self.__studentSrv.getStudents())==0:
+            print(Colors.GREEN + "Lista studentilor este goala.\n" + Colors.RESET)
+            return
+        if len(self.__disciplineSrv.getDisciplines() ==0):
+            print(Colors.GREEN + "Lista disciplinelor este goala.\n" + Colors.RESET)
+            return
+
+        try:
+            students = self.__gradeSrv.getTop20Percent()
+        except NonExistentStudentError as err:
+            raise NonExistentStudentError(str(err))
+        else:
+            for student in students:
+                print(student)
+
 
     def run(self):
         """Functia principala care executa programul"""

@@ -3,6 +3,7 @@ from validation.errors import InvalidGradeError, InvalidIDError, InvalidNameErro
 from domain.grade import Grade
 from data.DTOs.StudentPrintDTO import StudentPrintDTO
 from data.DTOs.StudentGradesDTO import StudentGradesDTO
+from data.DTOs.StudentGeneralDTO import StudentGeneralDTO
 
 class GradeService:
     def __init__(self, gradesRepo, catalogue, discValidator, studValidator, gradeValidator):
@@ -186,4 +187,29 @@ class GradeService:
 
         return studentGradesDTOS
 
+    def getTop20Percent(self):
+        """
+        Returneaza o lista de StudentGeneralDTO's continand primii 20% studenti luati dupa
+        media generala
+        :return: studentGeneralDTOS
+        """
+        studNumber = int((1/5) * len(self.__catalogue.getStudents()))
 
+        studentGeneralDTOS =[]
+        for student in self.__catalogue.getStudents():
+            newDTO = StudentGeneralDTO(student, self.__gradesRepo.getAverage(student.getID()))
+            studentGeneralDTOS.append(newDTO)
+
+        if len(studentGeneralDTOS) == 0:
+            raise NonExistentStudentError("Nu exista studenti in lista studentilor!\n")
+
+        for i in range(0, len(studentGeneralDTOS)-1):
+            for j in range(i+1, len(studentGeneralDTOS)):
+                if studentGeneralDTOS[i].getAverage() <studentGeneralDTOS[j].getAverage():
+                    aux = studentGeneralDTOS[i]
+                    studentGeneralDTOS[i] = studentGeneralDTOS[j]
+                    studentGeneralDTOS[j] = aux
+
+        if studNumber ==0:
+            raise NonExistentStudentError("Nu exista suficienti studenti in lista!\n")
+        return studentGeneralDTOS[:studNumber]
