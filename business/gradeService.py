@@ -2,6 +2,7 @@ from validation.errors import NonExistentIDError, NonExistentStudentError, Inval
 from validation.errors import InvalidGradeError, InvalidIDError, InvalidNameError, NonExistentGradeError
 from domain.grade import Grade
 from data.DTOs.StudentPrintDTO import StudentPrintDTO
+from data.DTOs.StudentGradesDTO import StudentGradesDTO
 
 class GradeService:
     def __init__(self, gradesRepo, catalogue, discValidator, studValidator, gradeValidator):
@@ -130,3 +131,59 @@ class GradeService:
             studentPrints.append(StudentPrintDTO(student, student.getDisciplines(), grades, self.__gradesRepo.getAverage(student.getID())))
 
         return studentPrints
+
+    def getStudentsFromDiscipline(self, disciplineID):
+        """
+        Returneaza toti studentii cu notele lor de la o anumita disciplina
+        :param disciplineID: id-ul disciplinei - string
+        :return studentGradesDTOS: lista de dto-uri continand studentii si notele lor la o materie
+        """
+        try:
+            self.__discValidator.validateID(disciplineID)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
+
+        try:
+            self.__catalogue.findDisciplineByID(disciplineID)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+
+        studentGradesDTOS = []
+
+        for student in self.__catalogue.getStudents():
+            discGrades = self.__gradesRepo.getDisciplineGrades(student.getID(), disciplineID)
+            average = self.__gradesRepo.getAverageForDisc(student.getID(), disciplineID)
+            newDto = StudentGradesDTO(student, discGrades, average)
+            studentGradesDTOS.append(newDto)
+
+        if len(studentGradesDTOS) == 0:
+            raise NonExistentStudentError("Nu exista studenti inrolati la disciplina respectiva!\n")
+
+        return studentGradesDTOS
+
+    def getStudentsFromDisciplineSortedByAvg(self, disciplineID):
+        """
+        Returneaza toti studentii cu notele lor de la o anumita disciplina
+        :param disciplineID: id-ul disciplinei - string
+        :return studentGradesDTOS: lista de dto-uri continand studentii si notele lor la o materie
+                                sortata dupa medie
+        """
+        try:
+            studentGradesDTOS = self.getStudentsFromDiscipline(disciplineID)
+        except InvalidIDError as err:
+            raise InvalidIDError(str(err))
+        except NonExistentStudentError as err:
+            raise NonExistentStudentError(str(err))
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+
+        for i in range(0, len(studentGradesDTOS)-1):
+            for j in range(i+1, len(studentGradesDTOS)):
+                if studentGradesDTOS[i].getAverage() < studentGradesDTOS[j].getAverage():
+                    aux = studentGradesDTOS[i]
+                    studentGradesDTOS[i] = studentGradesDTOS[j]
+                    studentGradesDTOS[j] = aux
+
+        return studentGradesDTOS
+
+

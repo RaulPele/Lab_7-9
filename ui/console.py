@@ -62,6 +62,12 @@ class Console:
         randomMenu.addFunction(self.generateRandomStudents)
         randomMenu.addItem("2. Inapoi...")
 
+        statisticsMenu = Menu()
+        statisticsMenu.addItem("1. Afiseaza toti studentii si notele lor de la o materie ordonati alfabetic")
+        statisticsMenu.addFunction(self.getStudentsFromDiscipline)
+        statisticsMenu.addItem("2. Afiseaza toti studentii si notele lor de la o materie ordonati dupa medie")
+        statisticsMenu.addFunction(self.getStudentsFromDisciplineSortedAvg)
+        statisticsMenu.addItem("3. Inapoi...")
 
         mainMenu = Menu()
         mainMenu.addItem("1. Adaugare")
@@ -71,7 +77,8 @@ class Console:
         mainMenu.addItem("5. Cautare")
         mainMenu.addItem("6. Note")
         mainMenu.addItem("7. Random")
-        mainMenu.addItem("8. Iesire")
+        mainMenu.addItem("8. Statistici")
+        mainMenu.addItem("9. Iesire")
         mainMenu.addSubMenu(addMenu)
         mainMenu.addSubMenu(printMenu)
         mainMenu.addSubMenu(removeMenu)
@@ -79,6 +86,7 @@ class Console:
         mainMenu.addSubMenu(searchMenu)
         mainMenu.addSubMenu(gradesMenu)
         mainMenu.addSubMenu(randomMenu)
+        mainMenu.addSubMenu(statisticsMenu)
         Menu.initializeStack(mainMenu)
 
     def __displayMenu(self):
@@ -549,6 +557,46 @@ class Console:
         else:
             self.printStudents()
 
+    def getStudentsFromDiscipline(self):
+        if len(self.__studentSrv.getStudents()) == 0:
+            print(Colors.GREEN + "Lista studentilor este goala.\n" + Colors.RESET)
+            return
+        if len(self.__disciplineSrv.getDisciplines()) == 0:
+            print(Colors.GREEN + "Lista disciplinelor este goala.\n" + Colors.RESET)
+            return
+
+        self.printDisciplines()
+        disciplineID = input("Dati id-ul disciplinei pentru care se face afisarea: \n")
+
+        try:
+            students = self.__gradeSrv.getStudentsFromDiscipline(disciplineID)
+        except (InvalidIDError, NonExistentStudentError, NonExistentIDError) as err:
+            print(str(err))
+        else:
+            for student in students:
+                print(student)
+            input("Apasati enter pentru a continua...")
+
+
+    def getStudentsFromDisciplineSortedAvg(self):
+        if len(self.__studentSrv.getStudents()) == 0:
+            print(Colors.GREEN + "Lista studentilor este goala.\n" + Colors.RESET)
+            return
+        if len(self.__disciplineSrv.getDisciplines()) == 0:
+            print(Colors.GREEN + "Lista disciplinelor este goala.\n" + Colors.RESET)
+            return
+
+        self.printDisciplines()
+        disciplineID = input("Dati id-ul disciplinei pentru care se face afisarea: \n")
+
+        try:
+            students = self.__gradeSrv.getStudentsFromDisciplineSortedByAvg(disciplineID)
+        except (InvalidIDError, NonExistentStudentError, NonExistentIDError) as err:
+            print(str(err))
+        else:
+            for student in students:
+                print(student)
+            input("Apasati enter pentru a continua...")
 
     def run(self):
         """Functia principala care executa programul"""

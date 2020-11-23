@@ -29,15 +29,30 @@ class GradesRepository:
         """
         sum = 0
         numOfDisc = 0
+        calculated =[]
 
         for grade in self.__grades:
             if grade.getStudentID() == studentID:
-                sum += grade.getValue()
-                numOfDisc += 1
+                if grade.getDisciplineID() not in calculated:
+                    sum += self.getAverageForDisc(studentID, grade.getDisciplineID())
+                    numOfDisc +=1
+                    calculated.append(grade.getDisciplineID())
 
         if numOfDisc == 0:
             return 0
         return sum/numOfDisc
+
+    def getAverageForDisc(self, studentID, disciplineID):
+        sum = 0
+        numOfGrades = 0
+        for grade in self.__grades:
+            if grade.getDisciplineID() == disciplineID and grade.getStudentID() == studentID:
+                sum += grade.getValue()
+                numOfGrades += 1
+
+        if numOfGrades == 0:
+            return 0
+        return sum/numOfGrades
 
     def getAllForStudent(self, studentID):
         """
@@ -72,3 +87,17 @@ class GradesRepository:
 
     def getAllGrades(self):
         return self.__grades
+
+    def getDisciplineGrades(self, studentID, disciplineID):
+        """
+        Returneaza toate notele unui student de la o materie
+        :param studentID: id-ul studentului
+        :param disciplineID: id-ul disciplinei
+        :return discGrades: lista de note - Grade() []
+        """
+        discGrades = []
+        for grade in self.__grades:
+            if grade.getStudentID() == studentID and grade.getDisciplineID() == disciplineID:
+                discGrades.append(grade)
+
+        return discGrades

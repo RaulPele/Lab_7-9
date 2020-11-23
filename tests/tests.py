@@ -1,6 +1,7 @@
 import data.repositories.catalogue
 import data.repositories.GradesRepository
 import data.DTOs.StudentPrintDTO
+import data.DTOs.StudentGradesDTO
 import domain.student
 import domain.discipline
 import domain.grade
@@ -914,9 +915,111 @@ class Tests:
         except validation.errors.NonExistentGradeError as err:
             assert str(err) == "Nota nu se afla in lista de note!\n"
 
+    def testGetDisciplineGrades(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+
+        discipline = domain.discipline.Discipline("1", "a", "b", "c", "nu")
+        catalogue.addDiscipline(discipline)
+        grade1 = domain.grade.Grade(10, "1", "1")
+        grade2 = domain.grade.Grade(10, "2", "1")
+        grade3 = domain.grade.Grade(3, "1", "1")
+        grade4 = domain.grade.Grade(5, "1", "2")
+        gradeRepo.addGrade(grade1)
+        gradeRepo.addGrade(grade2)
+        gradeRepo.addGrade(grade3)
+        gradeRepo.addGrade(grade4)
+
+        discGrades = gradeRepo.getDisciplineGrades("1", "1")
+        assert discGrades == [grade1, grade3]
+
+    def testGetStudentsFromDisciplineSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        studValidator = validation.validators.StudentValidator()
+        discValidator = validation.validators.DisciplineValidator()
+        gradeValidator = validation.validators.GradeValidator()
+
+        gradeSrv = business.gradeService.GradeService(gradeRepo, catalogue, discValidator, studValidator,
+                                                      gradeValidator)
+        discipline = domain.discipline.Discipline("1", "a", "b", "c", "nu")
+        student1 = domain.student.Student("1", "a", "b")
+        student2 = domain.student.Student("2", "c", "d")
+        catalogue.addDiscipline(discipline)
+        grade1 = domain.grade.Grade(10, "1", "1")
+        grade2 = domain.grade.Grade(10, "1", "1")
+        grade3 = domain.grade.Grade(3, "2", "1")
+        gradeRepo.addGrade(grade1)
+        gradeRepo.addGrade(grade2)
+        gradeRepo.addGrade(grade3)
+        catalogue.addStudent(student1)
+        catalogue.addStudent(student2)
+
+        student1DTO= data.DTOs.StudentGradesDTO.StudentGradesDTO(student1, [grade1, grade2], 10)
+        student2DTO= data.DTOs.StudentGradesDTO.StudentGradesDTO(student2, [grade3], 3)
 
 
+        try:
+            students = gradeSrv.getStudentsFromDiscipline("1")
+            assert students == [student1DTO, student2DTO]
+        except Exception:
+            assert False
 
+        try:
+            students = gradeSrv.getStudentsFromDiscipline("ASE123")
+            assert False
+        except validation.errors.InvalidIDError as err:
+            assert str(err) == "ID-ul disciplinei este invalid!\n"
+
+        try:
+            students = gradeSrv.getStudentsFromDiscipline("300")
+            assert False
+        except validation.errors.NonExistentIDError as err:
+            assert str(err) == "Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n"
+
+    def testGetStudentsFromDisciplineSortedByAvgSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        studValidator = validation.validators.StudentValidator()
+        discValidator = validation.validators.DisciplineValidator()
+        gradeValidator = validation.validators.GradeValidator()
+
+        gradeSrv = business.gradeService.GradeService(gradeRepo, catalogue, discValidator, studValidator,
+                                                      gradeValidator)
+        discipline = domain.discipline.Discipline("1", "a", "b", "c", "nu")
+        student1 = domain.student.Student("1", "a", "b")
+        student2 = domain.student.Student("2", "c", "d")
+        catalogue.addDiscipline(discipline)
+        grade1 = domain.grade.Grade(3, "1", "1")
+        grade2 = domain.grade.Grade(2, "1", "1")
+        grade3 = domain.grade.Grade(10, "2", "1")
+        gradeRepo.addGrade(grade1)
+        gradeRepo.addGrade(grade2)
+        gradeRepo.addGrade(grade3)
+        catalogue.addStudent(student1)
+        catalogue.addStudent(student2)
+
+        student1DTO= data.DTOs.StudentGradesDTO.StudentGradesDTO(student1, [grade1, grade2], 2.5)
+        student2DTO= data.DTOs.StudentGradesDTO.StudentGradesDTO(student2, [grade3], 10)
+
+        try:
+            students = gradeSrv.getStudentsFromDisciplineSortedByAvg("1")
+
+            assert students == [student2DTO, student1DTO]
+        except Exception:
+            assert False
+
+        try:
+            students = gradeSrv.getStudentsFromDisciplineSortedByAvg("ASE123")
+            assert False
+        except validation.errors.InvalidIDError as err:
+            assert str(err) == "ID-ul disciplinei este invalid!\n"
+
+        try:
+            students = gradeSrv.getStudentsFromDisciplineSortedByAvg("300")
+            assert False
+        except validation.errors.NonExistentIDError as err:
+            assert str(err) == "Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n"
 
     def runTests(self):
         self.testAddStudent()
@@ -955,4 +1058,7 @@ class Tests:
         self.testRemoveDisciplineGradesByID()
         self.testRemoveGrade()
         self.testRemoveGradeSrv()
+        self.testGetDisciplineGrades()
+        self.testGetStudentsFromDisciplineSrv()
+        self.testGetStudentsFromDisciplineSortedByAvgSrv()
 
