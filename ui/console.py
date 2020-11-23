@@ -456,7 +456,6 @@ class Console:
             print(Colors.GREEN + "Disciplina a fost modificata cu succes!\n" + Colors.RESET)
             input("Apasati enter pentru a continua...")
 
-    #TODO: validate discipline id
     def assignGrade(self):
         """
         Ia datele necesare pentru a atribui o nota unui student la o materie

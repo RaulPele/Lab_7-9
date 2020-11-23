@@ -48,13 +48,12 @@ class GradeService:
 
         return studentPrint
 
-    #TODO: testfunctions
     def getStudentInfoByName(self, studentName):
         try:
             names = studentName.split(" ")
             self.__studValidator.validateName(names[0], names[1])
         except (IndexError, KeyError, InvalidNameError) as err:
-            raise InvalidNameError(str(err))
+            raise InvalidNameError("Numele studentului este invalid!\n")
 
         try:
             students = self.__catalogue.findStudentByName(studentName)

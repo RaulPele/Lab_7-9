@@ -25,3 +25,4 @@ class StudentPrintDTO:
         gradeStr = Colors.GREEN + str(discGrades)
 
         return gradeStr
+

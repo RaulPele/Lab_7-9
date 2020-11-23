@@ -1,5 +1,5 @@
 class Grade:
-    def __init__(self, value = 0, IDStudent =None, IDDiscipline=None):
+    def __init__(self, value=0, IDStudent=None, IDDiscipline=None):
         self.__value = value
         self.__IDStudent = IDStudent
         self.__IDDiscipline = IDDiscipline
@@ -15,5 +15,3 @@ class Grade:
 
     def __eq__(self, other):
         return self.__value == other.__value and self.__IDStudent == other.__IDStudent and self.__IDDiscipline == other.__IDDiscipline
-
-

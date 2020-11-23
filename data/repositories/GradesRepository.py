@@ -1,4 +1,4 @@
-from validation.errors import  NonExistentIDError, NonExistentDisciplineError
+from validation.errors import  NonExistentIDError, NonExistentGradeError
 
 class GradesRepository:
     def __init__(self):
@@ -7,7 +7,14 @@ class GradesRepository:
     def addGrade(self, grade):
         self.__grades.append(grade)
 
-    #TODO: testGetAverage
+    def removeGradeByID(self, grade):
+        """
+        Sterge o nota din lista de note
+        :param grade: nota care se va sterge - Grade
+        raise NonExistentGradeError: daca nu exista nota cu id-ul dat
+        """
+
+
     def getAverage(self, studentID):
         """
         Calculeaza media generala pentru un student
@@ -41,6 +48,10 @@ class GradesRepository:
         return studGrades
 
     def removeDisciplineGradesByID(self, disciplineID):
+        """
+        Sterge toate notele corespunzatoare unei discipline cu id-ul disciplineID
+        :param disciplineID: id-ul disciplinei - string
+        """
         i=0
         disciplinesDeleted = False
         while i<len(self.__grades):
@@ -54,3 +65,5 @@ class GradesRepository:
         if not disciplinesDeleted:
             raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
 
+    def getAllGrades(self):
+        return self.__grades

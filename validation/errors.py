@@ -43,3 +43,7 @@ class NonExistentDisciplineError(Exception):
 class InvalidGradeError(Exception):
     def __init__(self, message):
         super().__init__(message)
+
+class NonExistentGradeError(Exception):
+    def __init__(self, message):
+        super().__init__(message)

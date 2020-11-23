@@ -1,5 +1,6 @@
 import data.repositories.catalogue
 import data.repositories.GradesRepository
+import data.DTOs.StudentPrintDTO
 import domain.student
 import domain.discipline
 import domain.grade
@@ -659,6 +660,173 @@ class Tests:
         disciplineSrv.modifyOptional("1", True)
         assert discipline1.getIsOptional() == True
 
+    def testGetStudentInfoByIDSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        studValidator = validation.validators.StudentValidator()
+        discValidator = validation.validators.DisciplineValidator()
+        gradeValidator = validation.validators.GradeValidator()
+
+        gradeSrv = business.gradeService.GradeService(gradeRepo, catalogue, discValidator, studValidator, gradeValidator)
+
+        student = domain.student.Student("1", "Raul", "Pele")
+        discipline = domain.discipline.Discipline("1", "asc", "a", "b", "nu")
+        grade = domain.grade.Grade(10, "1", "1")
+        catalogue.addStudent(student)
+        catalogue.addDiscipline(discipline)
+        gradeSrv.addGrade("1", "1", 10)
+
+        try:
+            results = gradeSrv.getStudentInfoByID("1")
+            correct = data.DTOs.StudentPrintDTO.StudentPrintDTO(student, [discipline], [grade], 10.0)
+
+            assert str(results) == str(correct)
+        except Exception:
+            assert False
+
+        try:
+            results = gradeSrv.getStudentInfoByID("asijde123")
+            assert False
+        except validation.validators.InvalidIDError as err:
+            assert str(err) == "ID-ul studentului este invalid!\n"
+
+        try:
+            results = gradeSrv.getStudentInfoByID("300")
+            assert False
+        except validation.errors.NonExistentIDError as err:
+            assert str(err) == "Studentul cu ID-ul dat nu se afla in lista studentilor!\n"
+
+    def testGetStudentInfoByNameSrv(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        studValidator = validation.validators.StudentValidator()
+        discValidator = validation.validators.DisciplineValidator()
+        gradeValidator = validation.validators.GradeValidator()
+
+        gradeSrv = business.gradeService.GradeService(gradeRepo, catalogue, discValidator, studValidator,
+                                                      gradeValidator)
+
+        student = domain.student.Student("1", "Raul", "Pele")
+        student2 = domain.student.Student("2", "Raul", "Pele")
+        discipline = domain.discipline.Discipline("1", "asc", "a", "b", "nu")
+        grade = domain.grade.Grade(10, "1", "1")
+        catalogue.addStudent(student)
+        catalogue.addStudent(student2)
+        catalogue.addDiscipline(discipline)
+        gradeSrv.addGrade("1", "1", 10)
+
+        try:
+            results = gradeSrv.getStudentInfoByName("Raul Pele")
+            correct1 = data.DTOs.StudentPrintDTO.StudentPrintDTO(student, [discipline], [grade], 10.0)
+            correct2 = data.DTOs.StudentPrintDTO.StudentPrintDTO(student2, [discipline], [], 0)
+            assert str(results[0]) == str(correct1)
+
+            assert str(results[1]) == str(correct2)
+        except Exception:
+            assert False
+
+        try:
+            results = gradeSrv.getStudentInfoByName("asijde123")
+            assert False
+        except validation.validators.InvalidNameError as err:
+            assert str(err) == "Numele studentului este invalid!\n"
+
+        try:
+            results = gradeSrv.getStudentInfoByName("Andrei Alex")
+            assert False
+        except validation.errors.NonExistentStudentError as err:
+            assert str(err) == "Studentul cu numele dat nu se afla in lista!\n"
+
+    def testGetAverage(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+        studValidator = validation.validators.StudentValidator()
+        discValidator = validation.validators.DisciplineValidator()
+        gradeValidator = validation.validators.GradeValidator()
+
+        gradeSrv = business.gradeService.GradeService(gradeRepo, catalogue, discValidator, studValidator,
+                                                      gradeValidator)
+
+        student = domain.student.Student("1", "Raul", "Pele")
+        student = domain.student.Student("2", "Andrei", "asde")
+
+        discipline = domain.discipline.Discipline("1", "asc", "a", "b", "nu")
+        catalogue.addStudent(student)
+        catalogue.addDiscipline(discipline)
+        gradeSrv.addGrade("1", "1", 10)
+        gradeSrv.addGrade("1", "1", 5)
+
+        average = gradeRepo.getAverage("1")
+        assert average == (10+5)/2
+
+        average = gradeRepo.getAverage("2")
+        assert average == 0
+
+    def testGetAllForStudent(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+
+        student = domain.student.Student("1", "Raul", "Pele")
+
+        discipline = domain.discipline.Discipline("1", "asc", "a", "b", "nu")
+        catalogue.addStudent(student)
+        catalogue.addDiscipline(discipline)
+        grade1 = domain.grade.Grade(10, "1", "1")
+        grade2 = domain.grade.Grade(5, "1", "1")
+
+        gradeRepo.addGrade(grade1)
+        gradeRepo.addGrade(grade2)
+
+        grades = gradeRepo.getAllForStudent("1")
+        assert grades == [grade1, grade2]
+
+    def testRemoveDisciplineGradesByID(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+
+        student = domain.student.Student("1", "Raul", "Pele")
+
+        discipline = domain.discipline.Discipline("1", "asc", "a", "b", "nu")
+        catalogue.addStudent(student)
+        catalogue.addDiscipline(discipline)
+        grade1 = domain.grade.Grade(10, "1", "1")
+        grade2 = domain.grade.Grade(5, "1", "1")
+        grade3 = domain.grade.Grade(5, "1", "2")
+
+        gradeRepo.addGrade(grade1)
+        gradeRepo.addGrade(grade2)
+        gradeRepo.addGrade(grade3)
+
+        try:
+            gradeRepo.removeDisciplineGradesByID("1")
+            assert gradeRepo.getAllGrades() == [grade3]
+        except Exception:
+            assert False
+
+        try:
+            gradeRepo.removeDisciplineGradesByID("1000")
+            assert False
+        except validation.errors.NonExistentIDError as err:
+            assert str(err) == "Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n"
+
+    def testRemoveGradeByID(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        gradeRepo = data.repositories.GradesRepository.GradesRepository()
+
+        student = domain.student.Student("1", "Raul", "Pele")
+
+        discipline = domain.discipline.Discipline("1", "asc", "a", "b", "nu")
+        catalogue.addStudent(student)
+        catalogue.addDiscipline(discipline)
+        grade1 = domain.grade.Grade(10, "1", "1")
+        grade2 = domain.grade.Grade(5, "1", "1")
+        grade3 = domain.grade.Grade(5, "1", "2")
+
+        gradeRepo.addGrade(grade1)
+        gradeRepo.addGrade(grade2)
+        gradeRepo.addGrade(grade3)
+
+
     def runTests(self):
         self.testAddStudent()
         self.testAddDiscipline()
@@ -690,4 +858,9 @@ class Tests:
         self.testModifyTeacherSrv()
         self.testModifyDiscOptionalSrv()
         self.testFindStudentByName()
+        self.testGetStudentInfoByIDSrv()
+        self.testGetStudentInfoByNameSrv()
+        self.testGetAverage()
+        self.testGetAllForStudent()
+        self.testRemoveDisciplineGradesByID()
 
