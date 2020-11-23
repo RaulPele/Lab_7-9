@@ -7,12 +7,17 @@ class GradesRepository:
     def addGrade(self, grade):
         self.__grades.append(grade)
 
-    def removeGradeByID(self, grade):
+    def removeGrade(self, grade):
         """
         Sterge o nota din lista de note
         :param grade: nota care se va sterge - Grade
         raise NonExistentGradeError: daca nu exista nota cu id-ul dat
         """
+        for i in range (0, len(self.__grades)):
+            if self.__grades[i] == grade:
+                del self.__grades[i]
+                return
+        raise NonExistentGradeError("Nota nu se afla in lista de note!\n")
 
 
     def getAverage(self, studentID):

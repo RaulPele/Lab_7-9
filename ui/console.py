@@ -2,7 +2,7 @@ from ui.menu import Menu
 from validation.errors import InvalidStudentError, StudentAlreadyExistsError, InvalidIDError
 from validation.errors import InvalidDisciplineError, DisciplineAlreadyExistsError, NonExistentIDError
 from validation.errors import InvalidGradeError, NonExistentStudentError, NonExistentDisciplineError
-from validation.errors import InvalidNameError
+from validation.errors import InvalidNameError, NonExistentGradeError
 from utils.colors import  Colors
 
 class Console:
@@ -46,7 +46,9 @@ class Console:
         gradesMenu = Menu()
         gradesMenu.addItem("1. Asigneaza o nota unui student la o materie")
         gradesMenu.addFunction(self.assignGrade)
-        gradesMenu.addItem("2. Inapoi...")
+        gradesMenu.addItem("2. Sterge o nota a unui student")
+        gradesMenu.addFunction(self.removeGrade)
+        gradesMenu.addItem("3. Inapoi...")
 
         modifyMenu = Menu()
         modifyMenu.addItem("1. Modifica un student din lista")
@@ -459,7 +461,6 @@ class Console:
     def assignGrade(self):
         """
         Ia datele necesare pentru a atribui o nota unui student la o materie
-        raise InvalidIDError - daca id-ul studentului sau al disciplinei nu este corect
         """
         if len(self.__studentSrv.getStudents())==0:
             print(Colors.GREEN + "Lista studentilor este goala.\n" + Colors.RESET)
@@ -472,9 +473,7 @@ class Console:
         identifier = input("Dati ID-ul studentului care primeste nota: \n")
         try:
             student = self.__gradeSrv.getStudentInfoByID(identifier)
-        except InvalidIDError as err:
-            print(str(err))
-        except NonExistentIDError as err:
+        except (InvalidIDError, NonExistentIDError) as err:
             print(str(err))
         else:
             print(student)
@@ -495,6 +494,41 @@ class Console:
                 print(self.__gradeSrv.getStudentInfoByID(identifier))
                 input("Apasati Enter pentru a continua...")
 
+    def removeGrade(self):
+        """
+        Ia datele necesare pentru a sterge o nota a unui student de la o materie
+        """
+        if len(self.__studentSrv.getStudents()) == 0:
+            print(Colors.GREEN + "Lista studentilor este goala.\n" + Colors.RESET)
+            return
+        if len(self.__disciplineSrv.getDisciplines()) == 0:
+            print(Colors.GREEN + "Lista disciplinelor este goala.\n" + Colors.RESET)
+            return
+        self.printStudents()
+
+        identifier = input("Dati ID-ul studentului pentru care se face stergerea: \n")
+        try:
+            student = self.__gradeSrv.getStudentInfoByID(identifier)
+        except (InvalidIDError, NonExistentIDError) as err:
+            print(str(err))
+        else:
+            print(student)
+
+            disciplineIdentifier = input("Dati ID-ul disciplinei: \n")
+            grade = input("Dati nota: \n")
+            try:
+                grade = float(grade)
+            except ValueError:
+                print("Nota trebuie sa fie de tipul float!\n")
+                return
+
+            try:
+                self.__gradeSrv.removeGrade(identifier, disciplineIdentifier, grade)
+            except (InvalidIDError, InvalidGradeError, NonExistentIDError, NonExistentGradeError)as err:
+                print(str(err))
+            else:
+                print(self.__gradeSrv.getStudentInfoByID(identifier))
+                input("Apasati Enter pentru a continua...")
 
     def generateRandomStudents(self):
         numberOfStudStr = input("Dati numarul de studenti generati aleator: ")
