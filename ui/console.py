@@ -69,7 +69,9 @@ class Console:
         statisticsMenu.addFunction(self.getStudentsFromDisciplineSortedAvg)
         statisticsMenu.addItem("3. Afiseaza primii 20% din studenti ordonati dupa media generala")
         statisticsMenu.addFunction(self.getTop20Percent)
-        statisticsMenu.addItem("4. Inapoi...")
+        statisticsMenu.addItem("4. Afiseaza disciplinele la care au promovat cel putin jumatate din studenti")
+        statisticsMenu.addFunction(self.getPromotedDisciplines)
+        statisticsMenu.addItem("5. Inapoi...")
 
         mainMenu = Menu()
         mainMenu.addItem("1. Adaugare")
@@ -607,18 +609,28 @@ class Console:
         if len(self.__studentSrv.getStudents())==0:
             print(Colors.GREEN + "Lista studentilor este goala.\n" + Colors.RESET)
             return
-        if len(self.__disciplineSrv.getDisciplines() ==0):
+        if len(self.__disciplineSrv.getDisciplines()) ==0:
             print(Colors.GREEN + "Lista disciplinelor este goala.\n" + Colors.RESET)
             return
 
         try:
             students = self.__gradeSrv.getTop20Percent()
         except NonExistentStudentError as err:
-            raise NonExistentStudentError(str(err))
+            print(str(err))
         else:
             for student in students:
                 print(student)
 
+    def getPromotedDisciplines(self):
+        try:
+            promotedDisciplines = self.__gradeSrv.getPromotingDisciplines()
+        except NonExistentDisciplineError as err:
+            print(str(err))
+            return
+        print(Colors.RED + "Disciplinele la care au promovat mai mult de jumatate de studenti sunt:\n " + Colors.RESET)
+
+        for d in promotedDisciplines:
+            print(d)
 
     def run(self):
         """Functia principala care executa programul"""

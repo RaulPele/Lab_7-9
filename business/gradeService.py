@@ -1,5 +1,6 @@
 from validation.errors import NonExistentIDError, NonExistentStudentError, InvalidStudentError
 from validation.errors import InvalidGradeError, InvalidIDError, InvalidNameError, NonExistentGradeError
+from validation.errors import NonExistentDisciplineError
 from domain.grade import Grade
 from data.DTOs.StudentPrintDTO import StudentPrintDTO
 from data.DTOs.StudentGradesDTO import StudentGradesDTO
@@ -151,11 +152,13 @@ class GradeService:
 
         studentGradesDTOS = []
 
+        discipline = self.__catalogue.findDisciplineByID(disciplineID)
         for student in self.__catalogue.getStudents():
-            discGrades = self.__gradesRepo.getDisciplineGrades(student.getID(), disciplineID)
-            average = self.__gradesRepo.getAverageForDisc(student.getID(), disciplineID)
-            newDto = StudentGradesDTO(student, discGrades, average)
-            studentGradesDTOS.append(newDto)
+            if discipline in student.getDisciplines():
+                discGrades = self.__gradesRepo.getDisciplineGrades(student.getID(), disciplineID)
+                average = self.__gradesRepo.getAverageForDisc(student.getID(), disciplineID)
+                newDto = StudentGradesDTO(student, discGrades, average)
+                studentGradesDTOS.append(newDto)
 
         if len(studentGradesDTOS) == 0:
             raise NonExistentStudentError("Nu exista studenti inrolati la disciplina respectiva!\n")
@@ -213,3 +216,34 @@ class GradeService:
         if studNumber ==0:
             raise NonExistentStudentError("Nu exista suficienti studenti in lista!\n")
         return studentGeneralDTOS[:studNumber]
+
+    def __halfPromoted(self, studentGradeDTOS):
+        total = len(studentGradeDTOS)
+        promoted = 0
+        for student in studentGradeDTOS:
+            if student.getAverage() >5:
+                promoted +=1
+        if promoted >= total/2:
+            return True
+        return False
+
+    def __filterStudents(self, studentGradesDTOS, discipline):
+        studentGradesDTOS = [stud for stud in studentGradesDTOS if discipline in stud.getStudent().getDisciplines()]
+        return studentGradesDTOS
+
+    def getPromotingDisciplines(self):
+        promotedDisciplines =[]
+        disciplines = self.__catalogue.getDisciplines()
+
+        for discipline in disciplines:
+            studentGradesDTOS = self.getStudentsFromDisciplineSortedByAvg(discipline.getID())
+            studentGradesDTOS = self.__filterStudents(studentGradesDTOS, discipline)
+            if self.__halfPromoted(studentGradesDTOS):
+                promotedDisciplines.append(discipline)
+
+        if len(promotedDisciplines) == 0:
+            raise NonExistentDisciplineError("Nu exista disipline la care au promovat mai mult de jumatate din studenti!\n")
+
+        return promotedDisciplines
+
+

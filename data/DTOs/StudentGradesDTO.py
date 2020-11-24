@@ -20,3 +20,6 @@ class StudentGradesDTO:
 
     def getAverage(self):
         return self.__average
+
+    def getStudent(self):
+        return self.__student

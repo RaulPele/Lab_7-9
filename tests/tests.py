@@ -890,8 +890,7 @@ class Tests:
         gradeRepo.addGrade(grade2)
         gradeRepo.addGrade(grade3)
 
-        for g in gradeRepo.getAllGrades():
-            print(g.getStudentID() + g.getDisciplineID() + str(g.getValue()))
+
         try:
             gradeSrv.removeGrade("1", "1", 10)
             assert gradeRepo.getAllGrades() == [grade2, grade3]

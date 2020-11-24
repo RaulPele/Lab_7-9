@@ -7,7 +7,7 @@ class StudentGeneralDTO:
 
     def __str__(self):
         output = str(self.__student)
-        output += Colors.RED + "Medie generala: "+ self.__average +Colors.RESET +'\n'
+        output += Colors.RED + "Medie generala: " + str(self.__average) +Colors.RESET +'\n'
         return output
 
     def getAverage(self):
