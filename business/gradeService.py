@@ -39,9 +39,15 @@ class GradeService:
             raise InvalidIDError(str(err))
 
         try:
-            self.__catalogue.findDisciplineByID(discIdentifier)
+            discipline = self.__catalogue.findDisciplineByID(discIdentifier)
+
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
+
+        if discipline.getIsOptional():
+            student = self.__catalogue.findStudentByID(studIdentifier)
+            if discipline not in student.getOptionals():
+                raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
 
         grade = Grade(gradeValue, studIdentifier, discIdentifier)
         self.__gradesRepo.addGrade(grade)

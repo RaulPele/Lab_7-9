@@ -108,7 +108,6 @@ class Console:
         op = input("Alege o optiune: \n")
         return op
 
-
     def getNextOption(self, op):
         """
         Executa urmatoarea actiune in functie de alegerea op a utilizatorului
