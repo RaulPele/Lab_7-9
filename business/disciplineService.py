@@ -135,7 +135,11 @@ class DisciplineService:
         except InvalidIDError as err:
             raise InvalidIDError(str(err))
 
-        discipline = self.__catalogue.findDisciplineByID(oldID)
+        try:
+            discipline = self.__catalogue.findDisciplineByID(oldID)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+
         self.__catalogue.modifyDiscID(discipline, newID)
 
     def modifyDiscName(self, IDDiscipline, newName):
@@ -150,7 +154,11 @@ class DisciplineService:
         except InvalidNameError as err:
             raise InvalidNameError(str(err))
 
-        discipline = self.__catalogue.findDisciplineByID(IDDiscipline)
+        try:
+            discipline = self.__catalogue.findDisciplineByID(IDDiscipline)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+
         self.__catalogue.modifyDiscName(discipline, newName)
 
 
@@ -166,7 +174,11 @@ class DisciplineService:
         except InvalidNameError as err:
             raise InvalidNameError(str(err))
 
-        discipline = self.__catalogue.findDisciplineByID(IDDiscipline)
+        try:
+            discipline = self.__catalogue.findDisciplineByID(IDDiscipline)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
+
         self.__catalogue.modifyDiscTeacher(discipline, newFirstName, newLastName)
 
     def modifyOptional(self, IDDiscipline, isOptional):
@@ -175,5 +187,8 @@ class DisciplineService:
         :param IDDiscipline: id-ul disciplinei - string
         :param isOptional: caracterul disciplinei - boolean
         """
-        discipline = self.__catalogue.findDisciplineByID(IDDiscipline)
+        try:
+            discipline = self.__catalogue.findDisciplineByID(IDDiscipline)
+        except NonExistentIDError as err:
+            raise NonExistentIDError(str(err))
         self.__catalogue.modifyDiscOptional(discipline, isOptional)
