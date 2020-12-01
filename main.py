@@ -8,7 +8,7 @@ from data.repositories.GradesRepository import GradesRepository
 from data.repositories.GradesFileRepo import GradesFileRepository
 from validation.validators import  StudentValidator, DisciplineValidator, GradeValidator
 from tests.tests import Tests
-
+import unittest
 
 if __name__ == "__main__":
     #catalogue = Catalogue()
@@ -24,8 +24,8 @@ if __name__ == "__main__":
     gradeSrv = GradeService(gradesRepo,catalogue, disciplineValidator, studentValidator, gradeValidator)
 
     console = Console(studentSrv, disciplineSrv, gradeSrv)
-    tests = Tests()
-    tests.runTests()
+    #tests = Tests()
+    #tests.runTests()
     console.run()
 
 

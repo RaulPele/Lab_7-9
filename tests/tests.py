@@ -11,6 +11,40 @@ import validation.validators
 import business.studentService
 import business.disciplineService
 import business.gradeService
+import unittest
+
+
+
+class TestCaseStudentService(unittest.TestCase):
+    def setUp(self):
+        catalogue = data.repositories.catalogue.Catalogue()
+        validator = validation.validators.StudentValidator()
+        self.studentSrv = business.studentService.StudentService(catalogue, validator)
+
+    def equal(self, list1, list2):
+        if len(list1) != len(list2):
+            return False
+        for i in range(0, len(list1)):
+            if list1[i].getID() != list2[i].getID():
+                return False
+            if list1[i].getFirstName() != list2[i].getFirstName():
+                return False
+            if list1[i].getLastName() != list2[i].getLastName():
+                return False
+        return True
+
+    def testAddStudent(self):
+        student1 = domain.student.Student("1", "Raul", "Pele")
+        student2 = domain.student.Student("2", "A", "A")
+
+        self.studentSrv.addStudent("1", "Raul", "Pele")
+        self.studentSrv.addStudent("2", "A", "A")
+
+        self.assertTrue(self.equal([student2, student1], self.studentSrv.getStudents()))
+
+        self.assertRaises(validation.errors.StudentAlreadyExistsError, self.studentSrv.addStudent,"1", "alex", "alex")
+
+
 
 class Tests:
 
@@ -1112,3 +1146,5 @@ class Tests:
         self.testGetStudentsFromDisciplineSortedByAvgSrv()
         self.testGetTop20PercentSrv()
 
+if __name__ == "__main__":
+    unittest.main()
