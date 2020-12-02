@@ -40,12 +40,11 @@ class GradeService:
 
         try:
             discipline = self.__catalogue.findDisciplineByID(discIdentifier)
-
+            student = self.__catalogue.findStudentByID(studIdentifier)
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
 
         if discipline.getIsOptional():
-            student = self.__catalogue.findStudentByID(studIdentifier)
             if discipline not in student.getOptionals():
                 raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
 
@@ -76,6 +75,7 @@ class GradeService:
 
         try:
             self.__catalogue.findDisciplineByID(discIdentifier)
+            self.__catalogue.findStudentByID(studIdentifier)
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
 
@@ -252,4 +252,5 @@ class GradeService:
 
         return promotedDisciplines
 
-
+    def getAllGrades(self):
+        return self.__gradesRepo.getAllGrades()
