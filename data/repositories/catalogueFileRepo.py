@@ -3,17 +3,22 @@ from domain.student import Student
 from domain.discipline import Discipline
 
 class CatalogueFileRepository(Catalogue):
-    #TODO: student/discipline remove, modify
-    def __init__(self, studentFileName, disciplineFileName):
+
+    def __init__(self, studentFileName, disciplineFileName, optionalsFileName="optionals.txt"):
         super().__init__()
         self.__studentFileName = studentFileName
         self.__disciplineFileName = disciplineFileName
-        self.__optionalFileName = "optionals.txt"
+        self.__optionalFileName = optionalsFileName
 
         self.__loadDisciplinesFromFile()
         self.__loadStudentsFromFile()
 
     def __getStudentOptionals(self, studentID):
+        """
+        Returneaza disciplinele optionale selectate de studentul studentID
+        :param studentID: string
+        :return optionals: lista de obiecte reprezentand optionalele studentului
+        """
         optionals = []
         try:
             optFile = open(self.__optionalFileName, "r")
@@ -28,6 +33,7 @@ class CatalogueFileRepository(Catalogue):
                     optionals.append(discipline)
                 break #am gasit deja studentul -> iesim
 
+        optFile.close()
         return optionals
 
 
@@ -146,6 +152,10 @@ class CatalogueFileRepository(Catalogue):
         super().selectOptionalsByID(IDStudent, IDDiscipline)
         self.__storeAllOptionals()
 
+    def removeOptionalsByID(self, IDStudent, IDDiscipline):
+        super().removeOptionalsByID(IDStudent, IDDiscipline)
+        self.__storeAllOptionals()
+
     def addStudent(self, newStudent):
         super().addStudent(newStudent)
         self.__appendStudent(newStudent)
@@ -207,4 +217,4 @@ class CatalogueFileRepository(Catalogue):
 
     def modifyStudentName(self, student, newFirstName, newLastName):
         super().modifyStudentName(student, newFirstName, newLastName)
-        self.modifyStudentName(student, newFirstName, newLastName)
+        self.__storeAllStudents()

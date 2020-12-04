@@ -2,9 +2,9 @@ from data.repositories.GradesRepository import GradesRepository
 from domain.grade import Grade
 
 class GradesFileRepository(GradesRepository):
-    def __init__(self):
+    def __init__(self, gradesFileName = "grades.txt"):
         super().__init__()
-        self.__gradesFileName = "grades.txt"
+        self.__gradesFileName = gradesFileName
 
         self.__loadGradesFromFile()
 

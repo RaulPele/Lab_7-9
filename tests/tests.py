@@ -1,5 +1,7 @@
 import data.repositories.catalogue
+import data.repositories.catalogueFileRepo
 import data.repositories.GradesRepository
+import data.repositories.GradesFileRepo
 import data.DTOs.StudentPrintDTO
 import data.DTOs.StudentGradesDTO
 import data.DTOs.StudentGeneralDTO
@@ -12,6 +14,7 @@ import business.studentService
 import business.disciplineService
 import business.gradeService
 import unittest
+import os
 
 class TestCaseStudentService(unittest.TestCase):
     def setUp(self):
@@ -419,6 +422,254 @@ class TestCaseGradesRepository(unittest.TestCase):
 
         self.assertEqual(self.gradesRepo.getDisciplineGrades("1", "1"), [grade1, grade3])
 
+
+class TestCaseCatalogueFile(unittest.TestCase):
+
+    def testSelectOptionalsByID(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt", "disciplineTest.txt", "optionalsTest.txt")
+
+        student = domain.student.Student("1", "Raul", "Pele")
+        discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
+        discipline2 = domain.discipline.Discipline("1", "Lc", "A", "P", "da")
+        self.catalogueFileRepo.addStudent(student)
+        self.catalogueFileRepo.addDiscipline(discipline1)
+        self.catalogueFileRepo.addDiscipline(discipline2)
+
+        self.catalogueFileRepo.selectOptionalsByID("1", "1")
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt", "disciplineTest.txt", "optionalsTest.txt")
+        optional = student.getOptionals()[0]
+        self.assertEqual(optional.getID(), discipline2.getID())
+        self.assertEqual(optional.getName(), discipline2.getName())
+        self.assertEqual(optional.getTeacherFirst(), discipline2.getTeacherFirst())
+        self.assertEqual(optional.getTeacherLast(), discipline2.getTeacherLast())
+        self.assertEqual(optional.getIsOptional(), discipline2.getIsOptional())
+
+    def equalDisciplines(self, list1, list2):
+        if len(list1) != len(list2):
+            return False
+        for i in range(0, len(list1)):
+            if list1[i].getID() != list2[i].getID():
+                return False
+            if list1[i].getName() != list2[i].getName():
+                return False
+            if list1[i].getTeacherFirst() != list2[i].getTeacherFirst():
+                return False
+            if list1[i].getTeacherLast() != list2[i].getTeacherLast():
+                return False
+            if list1[i].getIsOptional() != list2[i].getIsOptional():
+                return False
+        return True
+    def equal(self, list1, list2):
+        if len(list1) != len(list2):
+            return False
+        for i in range(0, len(list1)):
+            if list1[i].getID() != list2[i].getID():
+                return False
+            if list1[i].getFirstName() != list2[i].getFirstName():
+                return False
+            if list1[i].getLastName() != list2[i].getLastName():
+                return False
+        return True
+
+    def testAddStudent(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt", "disciplineTest.txt", "optionalsTest.txt")
+        student = domain.student.Student("1", "Raul", "Pele")
+        self.catalogueFileRepo.addStudent(student)
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt", "disciplineTest.txt", "optionalsTest.txt")
+
+        result = self.catalogueFileRepo.getStudents()[0]
+        self.assertEqual(student.getID(), result.getID())
+        self.assertEqual(student.getName(), result.getName())
+
+    def testAddDiscipline(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt", "disciplineTest.txt", "optionalsTest.txt")
+        discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
+        self.catalogueFileRepo.addDiscipline(discipline1)
+        discipline2 = domain.discipline.Discipline("1", "Lc", "A", "P", "da")
+        self.catalogueFileRepo.addDiscipline(discipline2)
+
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt", "disciplineTest.txt", "optionalsTest.txt")
+
+        self.assertTrue(self.equalDisciplines(self.catalogueFileRepo.getDisciplines(), [discipline1, discipline2]))
+
+    def testRemoveStudentByID(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt", "disciplineTest.txt", "optionalsTest.txt")
+        student = domain.student.Student("1", "Raul", "Pele")
+        student2 = domain.student.Student("2", "a", "b")
+        self.catalogueFileRepo.addStudent(student)
+        self.catalogueFileRepo.addStudent(student2)
+
+        self.catalogueFileRepo.removeStudentByID("1")
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt", "disciplineTest.txt", "optionalsTest.txt")
+        self.assertTrue(self.equal(self.catalogueFileRepo.getStudents(), [student2]))
+
+    def testRemoveStudentByName(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt", "disciplineTest.txt", "optionalsTest.txt")
+        student = domain.student.Student("1", "Raul", "Pele")
+        student2 = domain.student.Student("2", "Raul", "Pele")
+        self.catalogueFileRepo.addStudent(student)
+        self.catalogueFileRepo.addStudent(student2)
+        self.catalogueFileRepo.removeStudentByName("Raul Pele")
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt", "disciplineTest.txt", "optionalsTest.txt")
+        self.assertEqual(len(self.catalogueFileRepo.getStudents()), 0)
+
+    def testRemoveDisciplineByID(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
+        self.catalogueFileRepo.addDiscipline(discipline1)
+        discipline2 = domain.discipline.Discipline("1", "Lc", "A", "P", "da")
+        self.catalogueFileRepo.addDiscipline(discipline2)
+
+        self.catalogueFileRepo.removeDisciplineByID("1")
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        self.assertTrue(self.equalDisciplines(self.catalogueFileRepo.getDisciplines(), [discipline1]))
+
+    def testRemoveDisciplineByName(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
+        self.catalogueFileRepo.addDiscipline(discipline1)
+        discipline2 = domain.discipline.Discipline("1", "Asc", "A", "P", "da")
+        self.catalogueFileRepo.addDiscipline(discipline2)
+        self.catalogueFileRepo.removeDisciplineByName("Asc")
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        self.assertEqual(len(self.catalogueFileRepo.getDisciplines()), 0)
+
+    def testRemoveOptionalsByID(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
+        self.catalogueFileRepo.addDiscipline(discipline1)
+        discipline2 = domain.discipline.Discipline("1", "Asc", "A", "P", "da")
+        self.catalogueFileRepo.addDiscipline(discipline2)
+        student = domain.student.Student("1", "Raul", "Pele")
+        self.catalogueFileRepo.addStudent(student)
+        self.catalogueFileRepo.selectOptionalsByID("1", "1")
+        self.catalogueFileRepo.removeOptionalsByID("1", "1")
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+
+        self.assertEqual(len(student.getOptionals()), 0)
+
+    def testModifyDiscID(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
+        self.catalogueFileRepo.addDiscipline(discipline1)
+        discipline2 = domain.discipline.Discipline("1", "Asc", "A", "P", "da")
+        self.catalogueFileRepo.addDiscipline(discipline2)
+
+        self.catalogueFileRepo.modifyDiscID(discipline2, "100")
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        result = self.catalogueFileRepo.findDisciplineByID("100")
+        self.assertTrue(self.equalDisciplines([result], [discipline2]))
+
+    def testModifyDiscName(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
+        self.catalogueFileRepo.addDiscipline(discipline1)
+
+        self.catalogueFileRepo.modifyDiscName(discipline1, "Arhitectura Sistemelor De Calcul")
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        self.assertTrue(self.equalDisciplines(self.catalogueFileRepo.findDisciplineByName("Arhitectura Sistemelor De Calcul"), [discipline1]))
+
+    def testModifyDiscOptional(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
+        self.catalogueFileRepo.addDiscipline(discipline1)
+        self.catalogueFileRepo.modifyDiscOptional(discipline1, True)
+        self.assertEqual(self.catalogueFileRepo.findDisciplineByID("2").getIsOptional(), True)
+
+    def testModifyDiscTeacher(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
+        self.catalogueFileRepo.addDiscipline(discipline1)
+        self.catalogueFileRepo.modifyDiscTeacher(discipline1, "Alexandru", "Vancea")
+        self.assertEqual(self.catalogueFileRepo.findDisciplineByID("2").getTeacherFirst(), "Alexandru")
+        self.assertEqual(self.catalogueFileRepo.findDisciplineByID("2").getTeacherLast(), "Vancea")
+
+    def testModifyStudentID(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        student = domain.student.Student("1", "Raul", "Pele")
+        self.catalogueFileRepo.addStudent(student)
+        self.catalogueFileRepo.modifyStudentID(student, "1000")
+        self.assertTrue(self.equal([self.catalogueFileRepo.findStudentByID("1000")], [student]))
+
+    def testModifyStudentName(self):
+        self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
+                                                                                             "disciplineTest.txt",
+                                                                                             "optionalsTest.txt")
+        student = domain.student.Student("1", "Raul", "Pele")
+        self.catalogueFileRepo.addStudent(student)
+        self.catalogueFileRepo.modifyStudentName(student, "A", "A")
+        self.assertEqual(self.catalogueFileRepo.findStudentByID("1").getName(), "A A")
+
+
+    def tearDown(self):
+        if os.path.exists("studentsTest.txt"):
+            os.remove("studentsTest.txt")
+
+        if os.path.exists("disciplineTest.txt"):
+            os.remove("disciplineTest.txt")
+
+        if os.path.exists("optionalsTest.txt"):
+            os.remove("optionalsTest.txt")
+
+
+class TestCaseGradesFileRepo(unittest.TestCase):
+
+    def testAddGrade(self):
+        self.gradesFileRepo = data.repositories.GradesFileRepo.GradesFileRepository("gradesTest.txt")
+        grade = domain.grade.Grade(10, "1", "1")
+        self.gradesFileRepo.addGrade(grade)
+        self.gradesFileRepo = data.repositories.GradesFileRepo.GradesFileRepository("gradesTest.txt")
+        self.assertEqual(self.gradesFileRepo.getAllGrades(), [grade])
+
+    def testRemoveGrade(self):
+        self.gradesFileRepo = data.repositories.GradesFileRepo.GradesFileRepository("gradesTest.txt")
+        grade = domain.grade.Grade(10, "1", "1")
+        self.gradesFileRepo.addGrade(grade)
+        self.gradesFileRepo.removeGrade(grade)
+        self.gradesFileRepo = data.repositories.GradesFileRepo.GradesFileRepository("gradesTest.txt")
+        self.assertEqual(len(self.gradesFileRepo.getAllGrades()), 0)
+
+    def testRemoveDisciplineGradesByID(self):
+        self.gradesFileRepo = data.repositories.GradesFileRepo.GradesFileRepository("gradesTest.txt")
+        grade = domain.grade.Grade(10, "1", "1")
+        grade2 = domain.grade.Grade(5, "1", "1")
+        grade3 = domain.grade.Grade(3, "1", "2")
+        self.gradesFileRepo.addGrade(grade)
+        self.gradesFileRepo.addGrade(grade2)
+        self.gradesFileRepo.addGrade(grade3)
+        self.gradesFileRepo.removeDisciplineGradesByID("1")
+        self.gradesFileRepo = data.repositories.GradesFileRepo.GradesFileRepository("gradesTest.txt")
+        self.assertEqual(self.gradesFileRepo.getAllGrades(), [grade3])
+
+    def tearDown(self):
+        if os.path.exists("gradesTest.txt"):
+            os.remove("gradesTest.txt")
 
 if __name__ == "__main__":
     unittest.main()

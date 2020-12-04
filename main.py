@@ -7,8 +7,7 @@ from data.repositories.catalogueFileRepo import CatalogueFileRepository
 from data.repositories.GradesRepository import GradesRepository
 from data.repositories.GradesFileRepo import GradesFileRepository
 from validation.validators import  StudentValidator, DisciplineValidator, GradeValidator
-from tests.tests import Tests
-import unittest
+
 
 if __name__ == "__main__":
     #catalogue = Catalogue()
