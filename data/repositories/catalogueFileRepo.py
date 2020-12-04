@@ -1,6 +1,7 @@
 from data.repositories.catalogue import Catalogue
 from domain.student import Student
 from domain.discipline import Discipline
+from validation.errors import StudentAlreadyExistsError, NonExistentStudentError, NonExistentIDError
 
 class CatalogueFileRepository(Catalogue):
 
@@ -77,6 +78,7 @@ class CatalogueFileRepository(Catalogue):
         """
         Initializeaza lista de studenti din superclass cu datele din fisier
         """
+        super().clearStudentsList()
         try:
             studFile = open(self.__studentFileName, "r")
         except IOError:
@@ -87,7 +89,11 @@ class CatalogueFileRepository(Catalogue):
             if line == "":
                 continue
             student = self.__readStudentFromFile(line)
-            super().addStudent(student)
+            try:
+                super().addStudent(student)
+            except StudentAlreadyExistsError as err:
+                #print(str(err)) #TODO: remove line from file
+                pass
 
         studFile.close()
 
@@ -139,7 +145,7 @@ class CatalogueFileRepository(Catalogue):
         Suprascrie fisierul de studenti cu  toti studentii din lista de studenti din superclass
         """
         with open(self.__studentFileName, "w") as studFile:
-            for student in self.getStudents():
+            for student in super().getStudents():
                 studentStr = student.getID() + "," + student.getFirstName() + "," + student.getLastName()
                 studentStr += "\n"
                 studFile.write(studentStr)
@@ -197,7 +203,7 @@ class CatalogueFileRepository(Catalogue):
         Adauga un student in fisierul de studenti
         :param newStudent: studentul care se adauga
         """
-
+        self.__checkUpdateStudentsFile()
         super().addStudent(newStudent)
         self.__appendStudent(newStudent)
 
@@ -215,8 +221,15 @@ class CatalogueFileRepository(Catalogue):
         Sterge studentul cu id-ul ID din fisierul de studenti
         :param ID: id-ul studentului care se va sterge - string
         """
+        #print(len(super().getStudents()))
+        self.__checkUpdateStudentsFile()
+        #print(len(super().getStudents()))
 
-        super().removeStudentByID(ID)
+        try:
+            super().removeStudentByID(ID)
+        except NonExistentIDError as err:
+            print (str(err))
+            return
         self.__storeAllStudents()
         self.__storeAllOptionals() # todo: only rewrite optionals if student had optionals
 
@@ -226,7 +239,12 @@ class CatalogueFileRepository(Catalogue):
         :param name: numele studentilor - string
         """
 
-        super().removeStudentByName(name)
+        self.__checkUpdateStudentsFile()
+        try:
+            super().removeStudentByName(name)
+        except NonExistentStudentError as err:
+            print(str(err))
+            return
         self.__storeAllStudents()
         self.__storeAllOptionals() # todo: only rewrite optionals if student had optionals
 
@@ -304,6 +322,7 @@ class CatalogueFileRepository(Catalogue):
         :param student: obiect Student()
         :param newID: noul id al studentului - string"""
 
+        self.__checkUpdateStudentsFile()
         super().modifyStudentID(student, newID)
         self.__storeAllStudents()
 
@@ -317,5 +336,13 @@ class CatalogueFileRepository(Catalogue):
         :param newFirstName: nou prenume -string
         :param newLastName: noul nume - string
         """
+        self.__checkUpdateStudentsFile()
         super().modifyStudentName(student, newFirstName, newLastName)
         self.__storeAllStudents()
+
+    def __checkUpdateStudentsFile(self):
+        self.__loadStudentsFromFile()
+
+    def getStudents(self):
+        self.__checkUpdateStudentsFile()
+        return super().getStudents()

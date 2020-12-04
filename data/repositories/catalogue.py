@@ -314,3 +314,5 @@ class Catalogue():
         return optionals
 
 
+    def clearStudentsList(self):
+        self.__students.clear()
