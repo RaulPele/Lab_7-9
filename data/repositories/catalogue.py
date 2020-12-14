@@ -90,6 +90,23 @@ class Catalogue():
         raise NonExistentStudentError - daca nu exista student cu id-ul ID in lista
         :param ID: string - id-ul studentului
         """
+        """
+        Analiza complexitatii functiei:
+        students = list of students (self.__students)
+
+        BC(removeStudentByID) = min E(I) -> E(I)- numar de operatii efectuate, I <- students
+        -> acesta este cazul in care stundetul care va fi sters se afla pe prima pozitie in lista (best case scenario)
+        BC(removeStudentByID) = 1 <=> T(n) = 1 ∈ 𝛩(1) 
+
+        WC(removeStudentByID) = max E(students)
+        -> cazul in care studentul nu se afla in lista sau se afla pe ultima pozitie (Worst Case Scenario)
+        WC(removeStudentByID) = n <=> T(n) = n ∈ 𝛩(n)
+        
+        AC(removeStudentByID) = Sum(P(I)*E(I)) -> P = probabilitatea de avea I ca si date de intrare, I <- students
+        T(n) = (1+2+3+...+n)/n = n*(n+1)/2*n = (n+1)/2
+        T(n) = (n+1)/2 ∈ 𝛩(n) 
+        """
+        
         for i in range(0, len(self.__students)):
             student = self.__students[i]
             if student.getID() == ID:
@@ -165,6 +182,7 @@ class Catalogue():
         raise NonExistentIDError - daca studentul nu exista in lista
         :param ID: id-ul studentului - string
         """
+
         for student in self.__students:
             if student.getID() == ID:
                 return student
