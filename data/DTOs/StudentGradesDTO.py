@@ -23,3 +23,6 @@ class StudentGradesDTO:
 
     def getStudent(self):
         return self.__student
+
+    def getGrades(self):
+        return self.__grades

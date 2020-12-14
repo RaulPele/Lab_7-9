@@ -1,2 +1,2 @@
-123123213,A,B,C,True
 1,Arhitectura Sistemelor De Calcul,Alexandru,Vancea,False
+2,Lc,A,B,True

@@ -105,8 +105,11 @@ class Catalogue():
         AC(removeStudentByID) = Sum(P(I)*E(I)) -> P = probabilitatea de avea I ca si date de intrare, I <- students
         T(n) = (1+2+3+...+n)/n = n*(n+1)/2*n = (n+1)/2
         T(n) = (n+1)/2 ∈ 𝛩(n) 
-        """
         
+        Overall complexity: O(n)
+        
+        """
+
         for i in range(0, len(self.__students)):
             student = self.__students[i]
             if student.getID() == ID:

@@ -167,7 +167,7 @@ class CatalogueFileRepository(Catalogue):
         """
 
         with open(self.__optionalFileName, "w") as optFile:
-            for student in self.getStudents():
+            for student in super().getStudents():
                 optStr = student.getID()
 
                 optionals = student.getOptionals()
@@ -339,6 +339,8 @@ class CatalogueFileRepository(Catalogue):
         self.__checkUpdateStudentsFile()
         super().modifyStudentName(student, newFirstName, newLastName)
         self.__storeAllStudents()
+
+
 
     def __checkUpdateStudentsFile(self):
         self.__loadStudentsFromFile()

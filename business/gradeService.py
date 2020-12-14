@@ -5,6 +5,7 @@ from domain.grade import Grade
 from data.DTOs.StudentPrintDTO import StudentPrintDTO
 from data.DTOs.StudentGradesDTO import StudentGradesDTO
 from data.DTOs.StudentGeneralDTO import StudentGeneralDTO
+from utils.sorting import mergeSort, bingoSort
 
 class GradeService:
     def __init__(self, gradesRepo, catalogue, discValidator, studValidator, gradeValidator):
@@ -187,12 +188,8 @@ class GradeService:
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
 
-        for i in range(0, len(studentGradesDTOS)-1):
-            for j in range(i+1, len(studentGradesDTOS)):
-                if studentGradesDTOS[i].getAverage() < studentGradesDTOS[j].getAverage():
-                    aux = studentGradesDTOS[i]
-                    studentGradesDTOS[i] = studentGradesDTOS[j]
-                    studentGradesDTOS[j] = aux
+        #mergeSort(studentGradesDTOS, 0, len(studentGradesDTOS), key=lambda dto: dto.getAverage(), reverse=True)
+        bingoSort(studentGradesDTOS, key=lambda dto: dto.getAverage(), reverse=True)
 
         return studentGradesDTOS
 
@@ -212,12 +209,7 @@ class GradeService:
         if len(studentGeneralDTOS) == 0:
             raise NonExistentStudentError("Nu exista studenti in lista studentilor!\n")
 
-        for i in range(0, len(studentGeneralDTOS)-1):
-            for j in range(i+1, len(studentGeneralDTOS)):
-                if studentGeneralDTOS[i].getAverage() <studentGeneralDTOS[j].getAverage():
-                    aux = studentGeneralDTOS[i]
-                    studentGeneralDTOS[i] = studentGeneralDTOS[j]
-                    studentGeneralDTOS[j] = aux
+        bingoSort(studentGeneralDTOS, key=lambda dto: dto.getAverage(), reverse=True)
 
         if studNumber ==0:
             raise NonExistentStudentError("Nu exista suficienti studenti in lista!\n")

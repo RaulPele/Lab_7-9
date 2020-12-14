@@ -1,4 +1,3 @@
-3,B,C
-2,A,E
 1,Raul,Pele
-5,qweqwe,qweqwe
+2,A,E
+3,Q,S
