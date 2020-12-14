@@ -126,6 +126,7 @@ class TestCaseStudentService(unittest.TestCase):
         self.assertRaises(validation.errors.NonExistentIDError, self.studentSrv.modifyName, "1", "a", "b")
         self.assertRaises(validation.errors.InvalidNameError, self.studentSrv.modifyName, "123", "312as", "23asde")
 
+
 class TestCaseDisciplineService(unittest.TestCase):
     def setUp(self):
         catalogue = data.repositories.catalogue.Catalogue()
@@ -605,6 +606,7 @@ class TestCaseCatalogueFile(unittest.TestCase):
         discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
         self.catalogueFileRepo.addDiscipline(discipline1)
         self.catalogueFileRepo.modifyDiscTeacher(discipline1, "Alexandru", "Vancea")
+
         self.assertEqual(self.catalogueFileRepo.findDisciplineByID("2").getTeacherFirst(), "Alexandru")
         self.assertEqual(self.catalogueFileRepo.findDisciplineByID("2").getTeacherLast(), "Vancea")
 
@@ -615,6 +617,8 @@ class TestCaseCatalogueFile(unittest.TestCase):
         student = domain.student.Student("1", "Raul", "Pele")
         self.catalogueFileRepo.addStudent(student)
         self.catalogueFileRepo.modifyStudentID(student, "1000")
+        student.setID("1000")
+
         self.assertTrue(self.equal([self.catalogueFileRepo.findStudentByID("1000")], [student]))
 
     def testModifyStudentName(self):

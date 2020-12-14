@@ -324,6 +324,7 @@ class CatalogueFileRepository(Catalogue):
 
         self.__checkUpdateStudentsFile()
         super().modifyStudentID(student, newID)
+        #print(student)
         self.__storeAllStudents()
 
         if len(student.getOptionals()) != 0:
@@ -339,8 +340,6 @@ class CatalogueFileRepository(Catalogue):
         self.__checkUpdateStudentsFile()
         super().modifyStudentName(student, newFirstName, newLastName)
         self.__storeAllStudents()
-
-
 
     def __checkUpdateStudentsFile(self):
         self.__loadStudentsFromFile()

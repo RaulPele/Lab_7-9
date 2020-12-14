@@ -269,7 +269,9 @@ class Catalogue():
         :param newFirstName: noul prenume - string
         :param newLastName: noul nume - string
         """
-        student.setName(newFirstName, newLastName)
+        for st in self.__students:
+            if st == student:
+                st.setName(newFirstName, newLastName)
 
     def modifyStudentID(self, student, newID):
         """
@@ -277,7 +279,10 @@ class Catalogue():
         :param student: obiect Student()
         :param newID: noul id - string
         """
-        student.setID(newID)
+        for st in self.__students:
+            if st == student:
+                st.setID(newID)
+                return
 
     def modifyDiscID(self, discipline, newID):
         """
