@@ -179,17 +179,28 @@ class Catalogue():
             raise NonExistentDisciplineError("Disciplina cu numele dat nu se afla in lista!\n")
 
 
-    def findStudentByID(self, ID):
+    def findStudentByID(self, ID, i=0):
         """
         Returneaza studentul cu id-ul ID din lista
         raise NonExistentIDError - daca studentul nu exista in lista
         :param ID: id-ul studentului - string
+        :param i: contor pentru recursivitate
         """
 
-        for student in self.__students:
-            if student.getID() == ID:
-                return student
-        raise NonExistentIDError("Studentul cu ID-ul dat nu se afla in lista studentilor!\n")
+        # for student in self.__students:
+        #     if student.getID() == ID:
+        #         return student
+        # raise NonExistentIDError("Studentul cu ID-ul dat nu se afla in lista studentilor!\n")
+
+        if i >= len(self.__students):
+            raise NonExistentIDError("Studentul cu ID-ul dat nu se afla in lista studentilor!\n")
+        else:
+            if self.__students[i].getID() == ID:
+                return self.__students[i]
+            else:
+                return self.findStudentByID(ID, i+1)
+
+
 
     def findStudentByName(self, name):
         """
@@ -207,16 +218,24 @@ class Catalogue():
             raise NonExistentStudentError("Studentul cu numele dat nu se afla in lista!\n")
         return students
 
-    def findDisciplineByID(self, ID):
+    def findDisciplineByID(self, ID, i=0):
         """
         Returneaza studentul cu id-ul ID din lista
         raise NonExistentIDError - daca disciplina nu exista in lista
         :param ID:  id-ul disciplinei - string
         """
-        for discipline in self.__disciplines:
-            if discipline.getID() == ID:
-                return discipline
-        raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
+        # for discipline in self.__disciplines:
+        #     if discipline.getID() == ID:
+        #         return discipline
+        # raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
+
+        if i>=len(self.__disciplines):
+            raise NonExistentIDError("Disciplina cu ID-ul dat nu se afla in lista disciplinelor!\n")
+        else:
+            if self.__disciplines[i].getID() == ID:
+                return self.__disciplines[i]
+            else:
+                return self.findDisciplineByID(ID, i+1)
 
     def findDisciplineByName(self, name):
         disciplines = []
