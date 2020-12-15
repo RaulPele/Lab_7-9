@@ -238,6 +238,12 @@ class Catalogue():
                 return self.findDisciplineByID(ID, i+1)
 
     def findDisciplineByName(self, name):
+        """
+        Returneaza toate disciplinele cu numele name din lista de discipline
+        :param name: numele disciplinelor care se cauta - string
+        :return disciplines: lista de discipline corespunzatoare
+        raise NonExistentDisciplineError - daca nu exista nicio disciplina cu numele name
+        """
         disciplines = []
         for d in self.__disciplines:
             if d.getName().lower() == name.lower():
