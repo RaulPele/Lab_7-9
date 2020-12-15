@@ -139,11 +139,12 @@ class StudentService:
             raise InvalidIDError("ID-ul nou este invalid!\n")
 
         try:
-            student = self.__catalogue.findStudentByID(oldID)
+            #student = self.__catalogue.findStudentByID(oldID)
+            self.__catalogue.modifyStudentID(oldID, newID)
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
 
-        self.__catalogue.modifyStudentID(student, newID)
+        #self.__catalogue.modifyStudentID(student, newID)
 
 
     def modifyName(self, IDStudent, newFirstName, newLastName):
@@ -160,10 +161,11 @@ class StudentService:
             raise InvalidNameError(str(err))
 
         try:
-            student = self.__catalogue.findStudentByID(IDStudent)
+            #student = self.__catalogue.findStudentByID(IDStudent)
+            self.__catalogue.modifyStudentName(IDStudent, newFirstName, newLastName)
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
-        self.__catalogue.modifyStudentName(student, newFirstName, newLastName)
+        #self.__catalogue.modifyStudentName(student, newFirstName, newLastName)
 
     def __generateRandomID(self):
         id = ""

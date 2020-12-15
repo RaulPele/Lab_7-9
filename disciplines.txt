@@ -1,2 +1,2 @@
 1,Arhitectura Sistemelor De Calcul,Alexandru,Vancea,False
-2,Lc,A,B,True
+2,Logica Computationala,A,B,True

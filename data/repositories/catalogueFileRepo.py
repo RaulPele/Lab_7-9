@@ -270,43 +270,43 @@ class CatalogueFileRepository(Catalogue):
         self.__storeAllDisciplines()
         self.__storeAllOptionals() # todo: only rewrite optionals if discipline is optionals
 
-    def modifyDiscID(self, discipline, newID):
+    def modifyDiscID(self, ID, newID):
         """
         Modifica id-ul disciplinei discipline
         :param discipline: obiect Discipline()
         :param newID: id-ul nou - string
         """
 
-        super().modifyDiscID(discipline, newID)
+        super().modifyDiscID(ID, newID)
         self.__storeAllDisciplines()
 
-        if discipline.getIsOptional():
+        if self.findDisciplineByID(newID).getIsOptional():
             self.__storeAllOptionals()
 
-    def modifyDiscName(self, discipline, newName):
+    def modifyDiscName(self, ID, newName):
         """
         Modifica numele disciplinei discipline
         :param discipline: obiect Discipline()
         :param newName: numele nou - string
         """
 
-        super().modifyDiscName(discipline, newName)
+        super().modifyDiscName(ID, newName)
         self.__storeAllDisciplines()
 
-    def modifyDiscOptional(self, discipline, isOptional):
+    def modifyDiscOptional(self, ID, isOptional):
         """
         Modifica caracterul optional al unei discipline
         :param discipline: obiect Discipline()
         :param isOptional: noul caracter al disciplinei - optional sau obligatoriu - True sau False
         """
 
-        old = discipline.getIsOptional()
-        super().modifyDiscOptional(discipline, isOptional)
+        old = self.findDisciplineByID(ID).getIsOptional()
+        super().modifyDiscOptional(ID, isOptional)
         if old != isOptional:
             self.__storeAllDisciplines()
             self.__storeAllOptionals()
 
-    def modifyDiscTeacher(self, discipline, newFirstName, newLastName):
+    def modifyDiscTeacher(self, ID, newFirstName, newLastName):
         """
         Modifica numele profesorului unei discipline
         :param discipline: obiect Discipline()
@@ -314,23 +314,23 @@ class CatalogueFileRepository(Catalogue):
         :param newLastName: noul nume al profesorului - string
         """
 
-        super().modifyDiscTeacher(discipline ,newFirstName, newLastName)
+        super().modifyDiscTeacher(ID ,newFirstName, newLastName)
         self.__storeAllDisciplines()
 
-    def modifyStudentID(self, student, newID):
+    def modifyStudentID(self, ID, newID):
         """Modifica id-ul unui student
         :param student: obiect Student()
         :param newID: noul id al studentului - string"""
 
         self.__checkUpdateStudentsFile()
-        super().modifyStudentID(student, newID)
+        super().modifyStudentID(ID, newID)
         #print(student)
         self.__storeAllStudents()
 
-        if len(student.getOptionals()) != 0:
+        if len(self.findStudentByID(newID).getOptionals()) != 0:
             self.__storeAllOptionals()
 
-    def modifyStudentName(self, student, newFirstName, newLastName):
+    def modifyStudentName(self, ID, newFirstName, newLastName):
         """
         Modifica numele studentului
         :param student: obiect Student()
@@ -338,7 +338,7 @@ class CatalogueFileRepository(Catalogue):
         :param newLastName: noul nume - string
         """
         self.__checkUpdateStudentsFile()
-        super().modifyStudentName(student, newFirstName, newLastName)
+        super().modifyStudentName(ID, newFirstName, newLastName)
         self.__storeAllStudents()
 
     def __checkUpdateStudentsFile(self):

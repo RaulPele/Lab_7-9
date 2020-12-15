@@ -287,60 +287,69 @@ class Catalogue():
         else:
             student.removeDiscipline(discipline)
 
-    def modifyStudentName(self, student, newFirstName, newLastName):
+    def modifyStudentName(self, ID, newFirstName, newLastName):
         """
         Modifica numele studentului student in newFirstName si newLastName
         :param student: obiect Student()
         :param newFirstName: noul prenume - string
         :param newLastName: noul nume - string
         """
-        for st in self.__students:
-            if st == student:
-                st.setName(newFirstName, newLastName)
+        # for st in self.__students:
+        #     if st == student:
+        #         st.setName(newFirstName, newLastName)
+        student = self.findStudentByID(ID)
+        student.setName(newFirstName, newLastName)
 
-    def modifyStudentID(self, student, newID):
+    def modifyStudentID(self, ID, newID):
         """
         Modifica id-ul studentului student in newID
         :param student: obiect Student()
         :param newID: noul id - string
         """
-        for st in self.__students:
-            if st == student:
-                st.setID(newID)
-                return
+        # for st in self.__students:
+        #     if st.getID() == ID:
+        #         st.setID(newID)
+        #         return
+        # raise NonExistentIDError("Studentul cu ID-ul dat nu se afla in lista studentilor!\n")
+        student = self.findStudentByID(ID)
+        student.setID(newID)
 
-    def modifyDiscID(self, discipline, newID):
+    def modifyDiscID(self, ID, newID):
         """
         Modifica id-ul disciplinei discipline in newID
         :param discipline: Discipline()
         :param newID: id-ul nou - string
         """
+        discipline = self.findDisciplineByID(ID)
         discipline.setID(newID)
 
-    def modifyDiscName(self, discipline, newName):
+    def modifyDiscName(self, ID, newName):
         """
         Modifica numele disciplinei discipline in newName
         :param discipline: obiect Discipline()
         :param newName: noul nume - string
         """
+        discipline = self.findDisciplineByID(ID)
         discipline.setName(newName)
 
-    def modifyDiscTeacher(self, discipline, newFirstName, newLastName):
+    def modifyDiscTeacher(self, ID, newFirstName, newLastName):
         """
         Modifica numele profesorului disciplinei discipline in newFirstName + newLastName
         :param discipline: disciplina Discipline()
         :param newFirstName: noul prenume - string
         :param newLastName: noul nume - string
         """
+        discipline = self.findDisciplineByID(ID)
         discipline.setTeacherFirst(newFirstName)
         discipline.setTeacherLast(newLastName)
 
-    def modifyDiscOptional(self, discipline, isOptional):
+    def modifyDiscOptional(self, ID, isOptional):
         """
         Modifica caracterul disciplinei discipline
         :param discipline: Discipline()
         :param isOptional: caracterul disciplinei - bool
         """
+        discipline = self.findDisciplineByID(ID)
         oldOptional = discipline.getIsOptional()
         discipline.setOptional(isOptional)
 

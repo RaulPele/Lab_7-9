@@ -8,13 +8,12 @@ def merge(list,start, end, mid,*, key, operator):
     :param end: sfarsitul secventei - int
     :param operator: functie reprezentand operatorul - function()
     :param key: functia care returneaza cheia dupa care se face sortarea
-    :return sortedList: lista rezultata in urma interclasarii
     """
-    i=j=k=0
+    i = j = k = 0
     left = list[start:mid]
-    right =list[mid:end]
+    right = list[mid:end]
 
-    while i<len(left) and j <len(right):
+    while i < len(left) and j < len(right):
         if operator(key(left[i]), key(right[j])):
             list[k] = left[i]
             i += 1
@@ -40,7 +39,6 @@ def mergeSort(list,start, end, *, key = lambda obj:obj.getName(), reverse = Fals
     :param list: lista de obiecte
     :param key: key-ul dupa care se realizeaza sortarea
     :param reverse: ordinea in care se realizeaza sortarea - default: False
-    :return sortedList: lista sortata
     """
     operator = lambda x,y : x < y
     if reverse:
@@ -57,6 +55,12 @@ def mergeSort(list,start, end, *, key = lambda obj:obj.getName(), reverse = Fals
 
 
 def bingoSort(list, *, key = lambda obj: obj.getName(), reverse = False):
+    """
+    Functia sorteaza lista list dupa criteriul key in ordinea specificata de reverse dupa algoritmul bingo sort
+    :param list: lista de obiecte
+    :param key: criteriu de sortare - function()
+    :param reverse: ordine - bool
+    """
     operator = lambda x, y: x > y
     if reverse:
         operator = lambda x, y: x < y

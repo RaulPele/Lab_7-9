@@ -570,7 +570,7 @@ class TestCaseCatalogueFile(unittest.TestCase):
         discipline2 = domain.discipline.Discipline("1", "Asc", "A", "P", "da")
         self.catalogueFileRepo.addDiscipline(discipline2)
 
-        self.catalogueFileRepo.modifyDiscID(discipline2, "100")
+        self.catalogueFileRepo.modifyDiscID(discipline2.getID(), "100")
         self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
                                                                                              "disciplineTest.txt",
                                                                                              "optionalsTest.txt")
@@ -584,7 +584,7 @@ class TestCaseCatalogueFile(unittest.TestCase):
         discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
         self.catalogueFileRepo.addDiscipline(discipline1)
 
-        self.catalogueFileRepo.modifyDiscName(discipline1, "Arhitectura Sistemelor De Calcul")
+        self.catalogueFileRepo.modifyDiscName(discipline1.getID(), "Arhitectura Sistemelor De Calcul")
         self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
                                                                                              "disciplineTest.txt",
                                                                                              "optionalsTest.txt")
@@ -596,7 +596,7 @@ class TestCaseCatalogueFile(unittest.TestCase):
                                                                                              "optionalsTest.txt")
         discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
         self.catalogueFileRepo.addDiscipline(discipline1)
-        self.catalogueFileRepo.modifyDiscOptional(discipline1, True)
+        self.catalogueFileRepo.modifyDiscOptional(discipline1.getID(), True)
         self.assertEqual(self.catalogueFileRepo.findDisciplineByID("2").getIsOptional(), True)
 
     def testModifyDiscTeacher(self):
@@ -605,10 +605,11 @@ class TestCaseCatalogueFile(unittest.TestCase):
                                                                                              "optionalsTest.txt")
         discipline1 = domain.discipline.Discipline("2", "Asc", "A", "V", "nu")
         self.catalogueFileRepo.addDiscipline(discipline1)
-        self.catalogueFileRepo.modifyDiscTeacher(discipline1, "Alexandru", "Vancea")
+        self.catalogueFileRepo.modifyDiscTeacher(discipline1.getID(), "Alexandru", "Vancea")
 
         self.assertEqual(self.catalogueFileRepo.findDisciplineByID("2").getTeacherFirst(), "Alexandru")
         self.assertEqual(self.catalogueFileRepo.findDisciplineByID("2").getTeacherLast(), "Vancea")
+        self.assertRaises(validation.errors.NonExistentIDError, self.catalogueFileRepo.modifyDiscTeacher, "1000000","a", "v" )
 
     def testModifyStudentID(self):
         self.catalogueFileRepo = data.repositories.catalogueFileRepo.CatalogueFileRepository("studentsTest.txt",
@@ -616,7 +617,7 @@ class TestCaseCatalogueFile(unittest.TestCase):
                                                                                              "optionalsTest.txt")
         student = domain.student.Student("1", "Raul", "Pele")
         self.catalogueFileRepo.addStudent(student)
-        self.catalogueFileRepo.modifyStudentID(student, "1000")
+        self.catalogueFileRepo.modifyStudentID(student.getID(), "1000")
         student.setID("1000")
 
         self.assertTrue(self.equal([self.catalogueFileRepo.findStudentByID("1000")], [student]))
@@ -627,8 +628,9 @@ class TestCaseCatalogueFile(unittest.TestCase):
                                                                                              "optionalsTest.txt")
         student = domain.student.Student("1", "Raul", "Pele")
         self.catalogueFileRepo.addStudent(student)
-        self.catalogueFileRepo.modifyStudentName(student, "A", "A")
+        self.catalogueFileRepo.modifyStudentName(student.getID(), "A", "A")
         self.assertEqual(self.catalogueFileRepo.findStudentByID("1").getName(), "A A")
+        self.assertRaises(validation.errors.NonExistentIDError, self.catalogueFileRepo.modifyStudentName, "1923123", "a", "b")
 
 
     def tearDown(self):
