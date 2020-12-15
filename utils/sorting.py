@@ -90,3 +90,13 @@ def bingoSort(list, *, key = lambda obj: obj.getName(), reverse = False):
 
         while max > 0 and key(list[max]) == key(next):
             max -= 1
+
+
+def sort2keys(list, *, key1 = lambda x:x, key2=lambda x:x):
+    """Sorteaza lista dupa cele doua criterry key1 si key2. Daca key1(x) == key1(y) se sorteaza dupa key2"""
+    for i in range(0, len(list)-1):
+        for j in range(i+1, len(list)):
+            if key1(list[i]) > key1(list[j]) or (key1(list[i]) == key1(list[j]) and key2(list[i]) > key2(list[j])):
+                aux = list[i]
+                list[i]=list[j]
+                list[j] = aux

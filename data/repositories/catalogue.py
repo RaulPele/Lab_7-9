@@ -106,8 +106,7 @@ class Catalogue():
         T(n) = (1+2+3+...+n)/n = n*(n+1)/2*n = (n+1)/2
         T(n) = (n+1)/2 ∈ 𝛩(n) 
         
-        Overall complexity: O(n)
-        
+        Overall complexity: O(n)        
         """
 
         for i in range(0, len(self.__students)):

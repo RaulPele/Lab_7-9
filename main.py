@@ -7,7 +7,7 @@ from data.repositories.catalogueFileRepo import CatalogueFileRepository
 from data.repositories.GradesRepository import GradesRepository
 from data.repositories.GradesFileRepo import GradesFileRepository
 from validation.validators import  StudentValidator, DisciplineValidator, GradeValidator
-
+from utils.sorting import sort2keys
 
 if __name__ == "__main__":
     #catalogue = Catalogue()
@@ -26,6 +26,7 @@ if __name__ == "__main__":
     #tests = Tests()
     #tests.runTests()
     console.run()
+
 
 
 

@@ -5,7 +5,7 @@ from domain.grade import Grade
 from data.DTOs.StudentPrintDTO import StudentPrintDTO
 from data.DTOs.StudentGradesDTO import StudentGradesDTO
 from data.DTOs.StudentGeneralDTO import StudentGeneralDTO
-from utils.sorting import mergeSort, bingoSort
+from utils.sorting import mergeSort, bingoSort, sort2keys
 
 class GradeService:
     def __init__(self, gradesRepo, catalogue, discValidator, studValidator, gradeValidator):
@@ -188,8 +188,8 @@ class GradeService:
         except NonExistentIDError as err:
             raise NonExistentIDError(str(err))
 
-        #mergeSort(studentGradesDTOS, 0, len(studentGradesDTOS), key=lambda dto: dto.getAverage(), reverse=True)
-        bingoSort(studentGradesDTOS, key=lambda dto: dto.getAverage(), reverse=True)
+        mergeSort(studentGradesDTOS, 0, len(studentGradesDTOS), key=lambda dto: dto.getAverage(), reverse=True)
+        #bingoSort(studentGradesDTOS, key=lambda dto: dto.getAverage(), reverse=True)
 
         return studentGradesDTOS
 
